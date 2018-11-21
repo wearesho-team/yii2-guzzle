@@ -45,11 +45,11 @@ class Response extends db\ActiveRecord
     public function rules(): array
     {
         return [
-            [['http_request_id', 'status', 'headers', 'body',], 'required',],
+            [['http_request_id', 'status', 'headers',], 'required',],
             [['http_request_id',], 'exist', 'targetRelation' => 'request',],
             [['http_request_id',], 'unique',],
             [['status',], 'integer', 'min' => 100, 'max' => 599,],
-            [['headers',], 'each', 'rule' => ['each', 'rule' => 'string',],],
+            [['headers',], 'each', 'rule' => ['each', 'rule' => ['string'],],],
             [['body',], 'string',],
         ];
     }

@@ -41,11 +41,11 @@ class Request extends db\ActiveRecord
     public function rules(): array
     {
         return [
-            [['method', 'uri', 'headers', 'body',], 'required',],
+            [['method', 'uri', 'headers',], 'required',],
             [['method',], 'string', 'max' => 6,],
             [['method',], 'filter', 'filter' => 'mb_strtoupper',],
             [['uri',], 'string',],
-            [['headers',], 'each', 'rule' => ['each', 'rule' => 'string',],],
+            [['headers',], 'each', 'rule' => ['each', 'rule' => ['string'],],],
             [['body',], 'string',],
         ];
     }
