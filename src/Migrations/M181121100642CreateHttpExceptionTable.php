@@ -15,7 +15,7 @@ class M181121100642CreateHttpExceptionTable extends Migration
     public function safeUp(): void
     {
         $this->createTable('http_exception', [
-            'http_request_id' => $this->integer()->unsigned()->notNull(),
+            'http_request_id' => $this->integer()->notNull(),
             'type' => $this->text()->notNull(),
             'trace' => $this->json()->notNull(),
             'created_at' => $this->timestamp()->notNull()->defaultExpression('now()'),
