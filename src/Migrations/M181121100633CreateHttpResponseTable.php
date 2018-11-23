@@ -15,7 +15,7 @@ class M181121100633CreateHttpResponseTable extends Migration
     public function safeUp(): void
     {
         $this->createTable('http_response', [
-            'http_request_id' => $this->integer()->unsigned(),
+            'http_request_id' => $this->integer(),
             'status' => $this->smallInteger(),
             'headers' => $this->json()->notNull(),
             'body' => $this->text()->notNull(),
