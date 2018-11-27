@@ -3,7 +3,6 @@
 namespace Wearesho\Yii\Guzzle;
 
 use GuzzleHttp\Exception\RequestException;
-use Horat1us\Yii\Exceptions\ModelException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use yii\base;
@@ -56,13 +55,15 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
         $handlerStack = \GuzzleHttp\HandlerStack::create();
         $handlerStack->push($handler);
 
-        \Yii::$container->set(GuzzleHttp\ClientInterface::class,
+        \Yii::$container->set(
+            GuzzleHttp\ClientInterface::class,
             function ($container, $params, $config) use ($handlerStack) {
                 return new GuzzleHttp\Client(...$params + [
                         0 => $config + [
                                 'handler' => $handlerStack,
                             ]
                     ]);
-            });
+            }
+        );
     }
 }
