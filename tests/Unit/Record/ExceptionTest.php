@@ -1,13 +1,13 @@
 <?php
 
-namespace Wearesho\Yii\Guzzle\Tests\Unit\Log;
+namespace Wearesho\Yii\Guzzle\Tests\Unit\Record;
 
 use GuzzleHttp\Psr7\Request;
 use Wearesho\Yii\Guzzle;
 
 /**
  * Class ExceptionTest
- * @package Wearesho\Yii\Guzzle\Tests\Unit\Log
+ * @package Wearesho\Yii\Guzzle\Tests\Unit\Record
  * @coversDefaultClass \Wearesho\Yii\Guzzle\Log\Exception
  * @internal
  */
