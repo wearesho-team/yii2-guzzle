@@ -1,9 +1,9 @@
 <?php
 
-use Dotenv\Dotenv;
-
-$dotEnv = new Dotenv(dirname(__DIR__));
-$dotEnv->load();
+if (file_exists(dirname(__DIR__) . DIRECTORY_SEPARATOR . '.env')) {
+    $dotEnv = new \Dotenv\Dotenv(dirname(__DIR__));
+    $dotEnv->load();
+}
 
 getenv('DB_PATH') || putenv("DB_PATH=" . __DIR__ . '/db.sqlite');
 

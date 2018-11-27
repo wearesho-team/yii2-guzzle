@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "be723aece849cf9544b07390541b2f18",
+    "content-hash": "7ef101367af10c8c0096f4692c20e9d5",
     "packages": [
         {
             "name": "bower-asset/inputmask",
@@ -2400,11 +2400,51 @@
                 "validate"
             ],
             "time": "2018-01-29T19:49:41+00:00"
+        },
+        {
+            "name": "yiisoft/yii2-phpunit",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Horat1us/yii2-phpunit.git",
+                "reference": "2f864d917f12462997aef5c891b8d658d0b7a498"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Horat1us/yii2-phpunit/zipball/2f864d917f12462997aef5c891b8d658d0b7a498",
+                "reference": "2f864d917f12462997aef5c891b8d658d0b7a498",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "^2.0.13.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "yii\\phpunit\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Alexander Letnikow",
+                    "email": "reclamme@gmail.com"
+                }
+            ],
+            "description": "Yii 2 PHPUnit compatibility layer and enhancements",
+            "support": {
+                "source": "https://github.com/Horat1us/yii2-phpunit/tree/master"
+            },
+            "time": "2018-05-11T15:21:38+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "yiisoft/yii2-phpunit": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
