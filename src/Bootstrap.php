@@ -49,12 +49,12 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
 
                 $logRequest = $doLog ? Log\Request::create($request) : null;
                 return $handler($request, $options)->then(
-                    function (Message\ResponseInterface $response) use ($logRequest) {
-                        !$logRequest ?: Log\Response::create($response, $logRequest);
+                    function (Message\ResponseInterface $response) use ($logRequest, $doLog) {
+                        !$doLog ?: Log\Response::create($response, $logRequest);
                         return $response;
                     },
-                    function ($reason) use ($logRequest) {
-                        if ($logRequest) {
+                    function ($reason) use ($logRequest, $doLog) {
+                        if ($doLog) {
                             $reason instanceof \Throwable && Log\Exception::create($reason, $logRequest);
                             $response = $reason instanceof GuzzleHttp\Exception\RequestException
                                 ? $reason->getResponse()
