@@ -2,6 +2,7 @@
 
 namespace Wearesho\Yii\Guzzle\Tests\Unit;
 
+use GuzzleHttp\Psr7\Request;
 use Wearesho\Yii\Guzzle\Bootstrap;
 use Wearesho\Yii\Guzzle\Tests\TestCase;
 
