@@ -47,7 +47,7 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
             return function (Message\RequestInterface $request, array $options) use ($handler) {
                 $doLog = !in_array((string)$request->getUri(), $this->excludedUrls, true);
 
-                $logRequest = $doLog ? Log\Request::create($request) : null;
+                $logRequest = !$doLog ?: Log\Request::create($request);
                 return $handler($request, $options)->then(
                     function (Message\ResponseInterface $response) use ($logRequest, $doLog) {
                         !$doLog ?: Log\Response::create($response, $logRequest);
