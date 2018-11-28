@@ -2,10 +2,7 @@
 
 namespace Wearesho\Yii\Guzzle;
 
-use GuzzleHttp\Exception\RequestException;
-use Horat1us\Yii\Exceptions\ModelException;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message;
 use yii\base;
 use yii\console;
 use GuzzleHttp;
@@ -32,37 +29,39 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
         }
 
         $handler = function (\Closure $handler) {
-            return function (RequestInterface $request, array $options) use ($handler) {
+            return function (Message\RequestInterface $request, array $options) use ($handler) {
                 $logRequest = Log\Request::create($request);
                 return $handler($request, $options)->then(
-                    function (ResponseInterface $response) use ($logRequest) {
+                    function (Message\ResponseInterface $response) use ($logRequest) {
                         Log\Response::create($response, $logRequest);
                         return $response;
                     },
                     function ($reason) use ($logRequest) {
                         $reason instanceof \Throwable && Log\Exception::create($reason, $logRequest);
-                        $response = $reason instanceof RequestException
+                        $response = $reason instanceof GuzzleHttp\Exception\RequestException
                             ? $reason->getResponse()
                             : null;
                         if ($response) {
                             Log\Response::create($response, $logRequest);
                         }
 
-                        return \GuzzleHttp\Promise\rejection_for($reason);
+                        return GuzzleHttp\Promise\rejection_for($reason);
                     }
                 );
             };
         };
-        $handlerStack = \GuzzleHttp\HandlerStack::create();
+        $handlerStack = GuzzleHttp\HandlerStack::create();
         $handlerStack->push($handler);
 
-        \Yii::$container->set(GuzzleHttp\ClientInterface::class,
+        \Yii::$container->set(
+            GuzzleHttp\ClientInterface::class,
             function ($container, $params, $config) use ($handlerStack) {
                 return new GuzzleHttp\Client(...$params + [
                         0 => $config + [
                                 'handler' => $handlerStack,
                             ]
                     ]);
-            });
+            }
+        );
     }
 }

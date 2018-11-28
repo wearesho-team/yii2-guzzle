@@ -4,7 +4,6 @@ namespace Wearesho\Yii\Guzzle\Log;
 
 use yii\db;
 use yii\behaviors;
-use GuzzleHttp\Exception\GuzzleException;
 use Horat1us\Yii\Exceptions\ModelException;
 use Carbon\Carbon;
 

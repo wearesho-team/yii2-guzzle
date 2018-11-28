@@ -4,10 +4,11 @@ use yii\helpers\ArrayHelper;
 use yii\db\Connection;
 
 $localConfig = __DIR__ . DIRECTORY_SEPARATOR . 'config-local.php';
+$dbType = getenv('DB_TYPE');
 $host = getenv('DB_HOST');
 $name = getenv("DB_NAME");
 $port = getenv("DB_PORT");
-$dsn = "pgsql:host={$host};dbname={$name};port={$port}";
+$dsn = "{$dbType}:host={$host};dbname={$name};port={$port}";
 $config = [
     'id' => 'yii2-guzzle',
     'basePath' => dirname(__DIR__),
