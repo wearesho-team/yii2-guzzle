@@ -2,15 +2,12 @@
 
 namespace Wearesho\Yii\Guzzle;
 
-use GuzzleHttp\Exception\RequestException;
-use Horat1us\Yii\Exceptions\ModelException;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Horat1us\Yii\Traits\BootstrapMigrations;
+use GuzzleHttp;
+use Psr\Http\Message;
+use Wearesho\Yii\Guzzle\Log;
 use yii\base;
 use yii\console;
-use GuzzleHttp;
-use Horat1us\Yii\Traits\BootstrapMigrations;
-use Wearesho\Yii\Guzzle\Log;
 
 /**
  * Class Bootstrap
@@ -19,6 +16,16 @@ use Wearesho\Yii\Guzzle\Log;
 class Bootstrap extends base\BaseObject implements base\BootstrapInterface
 {
     use BootstrapMigrations;
+
+    /**
+     * Urls that should not be logged
+     *
+     * @var array Urls
+     *
+     * @example Url: https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top
+     *          Url: 'https://www.example.com/'
+     */
+    public $excludedDomains = [];
 
     /**
      * @param base\Application $app
@@ -32,37 +39,44 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
         }
 
         $handler = function (\Closure $handler) {
-            return function (RequestInterface $request, array $options) use ($handler) {
-                $logRequest = Log\Request::create($request);
+            return function (Message\RequestInterface $request, array $options) use ($handler) {
+                $uri = $request->getUri();
+                $doLog = !in_array($uri->getScheme() . $uri->getHost(), $this->excludedDomains);
+
+                $logRequest = $doLog ? Log\Request::create($request) : null;
                 return $handler($request, $options)->then(
-                    function (ResponseInterface $response) use ($logRequest) {
-                        Log\Response::create($response, $logRequest);
+                    function (Message\ResponseInterface $response) use ($logRequest) {
+                        !$logRequest ?: Log\Response::create($response, $logRequest);
                         return $response;
                     },
                     function ($reason) use ($logRequest) {
-                        $reason instanceof \Throwable && Log\Exception::create($reason, $logRequest);
-                        $response = $reason instanceof RequestException
-                            ? $reason->getResponse()
-                            : null;
-                        if ($response) {
-                            Log\Response::create($response, $logRequest);
+                        if ($logRequest) {
+                            $reason instanceof \Throwable && Log\Exception::create($reason, $logRequest);
+                            $response = $reason instanceof GuzzleHttp\Exception\RequestException
+                                ? $reason->getResponse()
+                                : null;
+                            if ($response) {
+                                Log\Response::create($response, $logRequest);
+                            }
                         }
 
-                        return \GuzzleHttp\Promise\rejection_for($reason);
+                        return GuzzleHttp\Promise\rejection_for($reason);
                     }
                 );
             };
         };
-        $handlerStack = \GuzzleHttp\HandlerStack::create();
+        $handlerStack = GuzzleHttp\HandlerStack::create();
         $handlerStack->push($handler);
 
-        \Yii::$container->set(GuzzleHttp\ClientInterface::class,
+        \Yii::$container->set(
+            GuzzleHttp\ClientInterface::class,
             function ($container, $params, $config) use ($handlerStack) {
                 return new GuzzleHttp\Client(...$params + [
                         0 => $config + [
                                 'handler' => $handlerStack,
                             ]
                     ]);
-            });
+            }
+        );
     }
 }
