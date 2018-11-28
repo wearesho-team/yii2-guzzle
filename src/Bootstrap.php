@@ -45,23 +45,23 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
 
         $handler = function (\Closure $handler) {
             return function (Message\RequestInterface $request, array $options) use ($handler) {
-                $doLog = !in_array((string)$request->getUri(), $this->excludedUrls, true);
+                if (in_array((string)$request->getUri(), $this->excludedUrls, true)) {
+                    return $handler($request, $options);
+                }
 
-                $logRequest = !$doLog ?: Log\Request::create($request);
+                $logRequest = Log\Request::create($request);
                 return $handler($request, $options)->then(
-                    function (Message\ResponseInterface $response) use ($logRequest, $doLog) {
-                        !$doLog ?: Log\Response::create($response, $logRequest);
+                    function (Message\ResponseInterface $response) use ($logRequest) {
+                        Log\Response::create($response, $logRequest);
                         return $response;
                     },
-                    function ($reason) use ($logRequest, $doLog) {
-                        if ($doLog) {
-                            $reason instanceof \Throwable && Log\Exception::create($reason, $logRequest);
-                            $response = $reason instanceof GuzzleHttp\Exception\RequestException
-                                ? $reason->getResponse()
-                                : null;
-                            if ($response) {
-                                Log\Response::create($response, $logRequest);
-                            }
+                    function ($reason) use ($logRequest) {
+                        $reason instanceof \Throwable && Log\Exception::create($reason, $logRequest);
+                        $response = $reason instanceof GuzzleHttp\Exception\RequestException
+                            ? $reason->getResponse()
+                            : null;
+                        if ($response) {
+                            Log\Response::create($response, $logRequest);
                         }
 
                         return GuzzleHttp\Promise\rejection_for($reason);
