@@ -18,14 +18,19 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
     use BootstrapMigrations;
 
     /**
-     * Urls that should not be logged
+     * URLs that should not be logged.
+     * They will be compared with the current and strictly
      *
-     * @var array Urls
+     * @var array
      *
-     * @example Url: https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top
-     *          Url: 'https://www.example.com/'
+     * @example
+     * URL to exclude:   https://www.example.com/home
+     * Will exclude:     https://www.example.com/home
+     * Will NOT exclude: https://www.example.com/
+     *                   https://www.example.com:123/
+     *                   http://www.example.com:/home
      */
-    public $excludedDomains = [];
+    public $excludedUrls = [];
 
     /**
      * @param base\Application $app
@@ -40,8 +45,7 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
 
         $handler = function (\Closure $handler) {
             return function (Message\RequestInterface $request, array $options) use ($handler) {
-                $uri = $request->getUri();
-                $doLog = !in_array($uri->getScheme() . $uri->getHost(), $this->excludedDomains);
+                $doLog = !in_array((string)$request->getUri(), $this->excludedUrls, true);
 
                 $logRequest = $doLog ? Log\Request::create($request) : null;
                 return $handler($request, $options)->then(
