@@ -167,6 +167,14 @@ class LogTest extends Guzzle\Tests\TestCase
 
         try {
             /** @noinspection PhpUnhandledExceptionInspection */
+            $this->client->send($request);
+        } catch (\Exception $ex) {
+            $logException = Guzzle\Log\Response::find()->andWhere(['=', 'status', 404])->one();
+            $this->assertSame($logException->body, json_encode(['json' => []]));
+        }
+
+        try {
+            /** @noinspection PhpUnhandledExceptionInspection */
             $this->client->send($excludeDomainRequest);
         } catch (\Exception $ex) {
             $logException = Guzzle\Log\Exception::find()->andWhere(['=', 'type', get_class($ex)])->one();
@@ -180,6 +188,10 @@ class LogTest extends Guzzle\Tests\TestCase
             $logException = Guzzle\Log\Exception::find()->andWhere(['=', 'type', get_class($ex)])->one();
             $this->assertNull($logException);
         }
+
+        $this->assertCount(2, Guzzle\Log\Request::find()->all());
+        $this->assertCount(2, Guzzle\Log\Response::find()->all());
+        $this->assertCount(0, Guzzle\Log\Exception::find()->all());
     }
 
     protected function setMocks(object ...$mocks): void
