@@ -2,7 +2,6 @@
 
 namespace Wearesho\Yii\Guzzle\Tests\Unit;
 
-use GuzzleHttp\Psr7\Request;
 use Wearesho\Yii\Guzzle\Bootstrap;
 use Wearesho\Yii\Guzzle\Tests\TestCase;
 
@@ -32,7 +31,10 @@ class BootstrapTest extends TestCase
 
     public function testBootstrapApp(): void
     {
-        $bootstrap = new Bootstrap();
+        $bootstrap = new Bootstrap([
+            'excludedDomains' => ['www.exclude-example.com',],
+            'excludedDomainsRegexes' => ['/php.net/']
+        ]);
         $bootstrap->bootstrap($this->app);
         $this->assertEquals(
             \Yii::getAlias('@vendor/wearesho-team/yii2-guzzle/src'),

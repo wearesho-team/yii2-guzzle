@@ -144,6 +144,44 @@ class LogTest extends Guzzle\Tests\TestCase
         }
     }
 
+    public function testExclude(): void
+    {
+        $request = $this->mockRequest();
+        $excludeDomainRequest = $this->mockRequest('GET', 'www.exclude-example.com');
+        $excludeDomainRegexRequest = $this->mockRequest('GET', 'php.net');
+        $this->setMocks(
+            $this->mockResponse(201, [['header_1' => 'test']], 'body'),
+            $this->mockResponse(404, [['header_2' => true]], json_encode(['json' => []])),
+            $this->mockBadResponseException($excludeDomainRequest),
+            $this->mockBadResponseException($excludeDomainRegexRequest)
+        );
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $response = $this->client->send($request);
+        $logResponse = Guzzle\Log\Response::find()->andWhere(['=', 'status', 201])->one();
+
+        $this->assertEquals($response->getHeaders(), $logResponse->headers);
+        $this->assertEquals((string)$request->getUri(), $logResponse->request->uri);
+        $this->assertEquals($response->getBody(), $logResponse->body);
+        $this->assertEquals($response->getStatusCode(), $logResponse->status);
+
+        try {
+            /** @noinspection PhpUnhandledExceptionInspection */
+            $this->client->send($excludeDomainRequest);
+        } catch (\Exception $ex) {
+            $logException = Guzzle\Log\Exception::find()->andWhere(['=', 'type', get_class($ex)])->one();
+            $this->assertNull($logException);
+        }
+
+        try {
+            /** @noinspection PhpUnhandledExceptionInspection */
+            $this->client->send($excludeDomainRegexRequest);
+        } catch (\Exception $ex) {
+            $logException = Guzzle\Log\Exception::find()->andWhere(['=', 'type', get_class($ex)])->one();
+            $this->assertNull($logException);
+        }
+    }
+
     protected function setMocks(object ...$mocks): void
     {
         $this->client->getConfig('handler')->setHandler(
