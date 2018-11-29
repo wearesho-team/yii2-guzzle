@@ -30,7 +30,7 @@ class BootstrapTest extends TestCase
         \Yii::$aliases = $this->aliases;
     }
 
-    public function testBootstrapWebApp(): void
+    public function testBootstrapApp(): void
     {
         $bootstrap = new Bootstrap();
         $bootstrap->bootstrap($this->app);

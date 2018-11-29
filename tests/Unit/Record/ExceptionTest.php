@@ -68,7 +68,7 @@ class ExceptionTest extends TestCase
             'trace' => static::TRACE,
             'type' => static::TYPE,
         ]);
-        $this->record->save();
+        $this->assertTrue($this->record->save());
 
         $this->assertNotEmpty($this->record->created_at);
         $this->assertTrue($this->record->validate());
