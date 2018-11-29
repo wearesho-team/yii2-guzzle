@@ -27,23 +27,20 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
      *
      * @example '/^(https|http):\/\/maps.googleapis.com\/.*$/' Will exclude urls to google api from logging
      */
-    public $excludedDomainsRegexes = [];
-
-    /**
-     * URLs that should not be logged.
-     * They will be compared as plain string.
-     *
-     * @var array
-     *
-     * @example 'http://www.example.com/'
-     */
-    public $excludedDomains = [];
+    public $exclude = [];
 
     /**
      * @param base\Application $app
+     *
+     * @throws base\InvalidConfigException
      */
     public function bootstrap($app)
     {
+        foreach ((array)$this->exclude as $regular) {
+            if (@preg_match($regular, '') === false) {
+                throw new base\InvalidConfigException("Given regular expression invalid: " . $regular);
+            }
+        }
         \Yii::setAlias('Wearesho/Yii/Guzzle', '@vendor/wearesho-team/yii2-guzzle/src');
 
         if ($app instanceof console\Application) {
@@ -53,14 +50,8 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
         $handler = function (\Closure $handler) {
             return function (Message\RequestInterface $request, array $options) use ($handler) {
                 $handler = $handler($request, $options);
-                $uri = (string)$request->getUri();
-
-                if (in_array($uri, $this->excludedDomains, true)) {
-                    return $handler;
-                }
-                
-                foreach ($this->excludedDomainsRegexes as $domain) {
-                    if (preg_match((string)$domain, $uri)) {
+                foreach ((array)$this->exclude as $domain) {
+                    if (preg_match((string)$domain, (string)$request->getUri())) {
                         return $handler;
                     }
                 }
