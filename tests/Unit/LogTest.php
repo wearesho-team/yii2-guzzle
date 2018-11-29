@@ -147,12 +147,11 @@ class LogTest extends Guzzle\Tests\TestCase
     public function testExclude(): void
     {
         $request = $this->mockRequest();
-        $excludeDomainRequest = $this->mockRequest('GET', 'www.exclude-example.com');
         $excludeDomainRegexRequest = $this->mockRequest('GET', 'php.net');
         $this->setMocks(
             $this->mockResponse(201, [['header_1' => 'test']], 'body'),
             $this->mockResponse(404, [['header_2' => true]], json_encode(['json' => []])),
-            $this->mockBadResponseException($excludeDomainRequest),
+            $this->mockBadResponseException($excludeDomainRegexRequest),
             $this->mockBadResponseException($excludeDomainRegexRequest)
         );
 
@@ -175,7 +174,7 @@ class LogTest extends Guzzle\Tests\TestCase
 
         try {
             /** @noinspection PhpUnhandledExceptionInspection */
-            $this->client->send($excludeDomainRequest);
+            $this->client->send($excludeDomainRegexRequest);
         } catch (\Exception $ex) {
             $logException = Guzzle\Log\Exception::find()->andWhere(['=', 'type', get_class($ex)])->one();
             $this->assertNull($logException);

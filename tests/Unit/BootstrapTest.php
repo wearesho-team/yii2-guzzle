@@ -32,8 +32,7 @@ class BootstrapTest extends TestCase
     public function testBootstrapApp(): void
     {
         $bootstrap = new Bootstrap([
-            'excludedDomains' => ['www.exclude-example.com',],
-            'excludedDomainsRegexes' => ['/php.net/']
+            'exclude' => ['/php.net/']
         ]);
         $bootstrap->bootstrap($this->app);
         $this->assertEquals(
