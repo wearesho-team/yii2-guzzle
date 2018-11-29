@@ -3,8 +3,7 @@
 namespace Wearesho\Yii\Guzzle\Tests\Unit;
 
 use GuzzleHttp;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message;
 use Wearesho\Yii\Guzzle;
 
 /**
@@ -144,7 +143,6 @@ class LogTest extends Guzzle\Tests\TestCase
             $this->assertEquals((string)$request->getUri(), $logResponse->request->uri);
             $this->assertEquals($response->getBody(), $logResponse->body);
             $this->assertEquals($response->getStatusCode(), $logResponse->status);
-
         }
     }
 
@@ -173,9 +171,9 @@ class LogTest extends Guzzle\Tests\TestCase
     }
 
     protected function mockBadResponseException(
-        RequestInterface $request,
+        Message\RequestInterface $request,
         string $message = self::EXCEPTION_MESSAGE,
-        ResponseInterface $response = null,
+        Message\ResponseInterface $response = null,
         \Exception $previous = null
     ) {
         return new GuzzleHttp\Exception\BadResponseException($message, $request, $response, $previous);
