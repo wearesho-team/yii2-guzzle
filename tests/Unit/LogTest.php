@@ -114,8 +114,7 @@ class LogTest extends Guzzle\Tests\TestCase
             $this->client->send($request);
         } catch (\Exception $ex) {
             $logException = Guzzle\Log\Exception::find()->andWhere(['=', 'type', get_class($ex)])->one();
-            // Instead of `assertEquals` because of casting objects to array when saving model
-            $this->assertSame($logException->trace, $ex->getTrace());
+            $this->assertSame($logException->type, get_class($ex));
         }
     }
 
