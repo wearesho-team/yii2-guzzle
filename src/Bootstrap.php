@@ -60,7 +60,7 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
                 }
                 
                 foreach ($this->excludedDomainsRegexes as $domain) {
-                    if (preg_match((string)$domain, (string)$request->getUri())) {
+                    if (preg_match((string)$domain, $uri)) {
                         return $handler;
                     }
                 }
