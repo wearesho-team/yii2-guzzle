@@ -2,12 +2,12 @@
 
 namespace Wearesho\Yii\Guzzle;
 
+use Horat1us\Yii\Traits\BootstrapMigrations;
+use GuzzleHttp;
 use Psr\Http\Message;
+use Wearesho\Yii\Guzzle\Log;
 use yii\base;
 use yii\console;
-use GuzzleHttp;
-use Horat1us\Yii\Traits\BootstrapMigrations;
-use Wearesho\Yii\Guzzle\Log;
 
 /**
  * Class Bootstrap
@@ -16,6 +16,21 @@ use Wearesho\Yii\Guzzle\Log;
 class Bootstrap extends base\BaseObject implements base\BootstrapInterface
 {
     use BootstrapMigrations;
+
+    /**
+     * URLs that should not be logged.
+     * They will be compared with the current and strictly
+     *
+     * @var array
+     *
+     * @example
+     * URL to exclude:   https://www.example.com/home
+     * Will exclude:     https://www.example.com/home
+     * Will NOT exclude: https://www.example.com/
+     *                   https://www.example.com:123/
+     *                   http://www.example.com:/home
+     */
+    public $excludedUrls = [];
 
     /**
      * @param base\Application $app
@@ -30,6 +45,10 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
 
         $handler = function (\Closure $handler) {
             return function (Message\RequestInterface $request, array $options) use ($handler) {
+                if (in_array((string)$request->getUri(), $this->excludedUrls, true)) {
+                    return $handler($request, $options);
+                }
+
                 $logRequest = Log\Request::create($request);
                 return $handler($request, $options)->then(
                     function (Message\ResponseInterface $response) use ($logRequest) {
