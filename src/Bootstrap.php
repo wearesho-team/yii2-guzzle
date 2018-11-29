@@ -27,6 +27,16 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
      *
      * @example '/^(https|http)://maps.googleapis.com/.*$/' Will exclude urls to google api from logging
      */
+    public $excludedDomainsRegexes = [];
+
+    /**
+     * URLs that should not be logged.
+     * They will be compared as plain string.
+     *
+     * @var array
+     *
+     * @example 'http://www.example.com/'
+     */
     public $excludedDomains = [];
 
     /**
@@ -42,14 +52,21 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
 
         $handler = function (\Closure $handler) {
             return function (Message\RequestInterface $request, array $options) use ($handler) {
-                foreach ($this->excludedDomains as $domain) {
+                $handler = $handler($request, $options);
+                $uri = (string)$request->getUri();
+
+                if (in_array($uri, $this->excludedDomains, true)) {
+                    return $handler;
+                }
+                
+                foreach ($this->excludedDomainsRegexes as $domain) {
                     if (preg_match((string)$domain, (string)$request->getUri())) {
-                        return $handler($request, $options);
+                        return $handler;
                     }
                 }
 
                 $logRequest = Log\Request::create($request);
-                return $handler($request, $options)->then(
+                return $handler->then(
                     function (Message\ResponseInterface $response) use ($logRequest) {
                         Log\Response::create($response, $logRequest);
                         return $response;
