@@ -18,10 +18,8 @@ return [
     'bootstrap' => [
          'http-log' => [
              'class' => Guzzle\Bootstrap::class,
-             // Add plain string of domains if you need exclude their from logging
-             'excludedDomains' => ['http://exexample.com',],
               // Add regular expression if you need exclude their from logging
-             'excludedDomainsRegexes' => ['/^.*(google).*$/iu'],
+             'exclude' => ['/^.*(google).*$/iu'],
          ],
     ],
 ];
