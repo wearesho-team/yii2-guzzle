@@ -16,6 +16,7 @@ use Carbon\Carbon;
  * @property string $headers [jsonb]
  * @property string $body
  * @property int $created_at [timestamp(0)]
+ * @property-read Request $request
  */
 class Response extends db\ActiveRecord
 {

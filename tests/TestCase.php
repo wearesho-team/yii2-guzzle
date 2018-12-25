@@ -2,6 +2,7 @@
 
 namespace Wearesho\Yii\Guzzle\Tests;
 
+use Wearesho\Yii\Guzzle\Bootstrap;
 use yii\helpers;
 use yii\phpunit;
 

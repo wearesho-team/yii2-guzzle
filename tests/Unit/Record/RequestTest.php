@@ -11,7 +11,7 @@ use Wearesho\Yii\Guzzle;
  * @coversDefaultClass \Wearesho\Yii\Guzzle\Log\Request
  * @internal
  */
-class RequestTest extends Guzzle\Tests\TestCase
+class RequestTest extends TestCase
 {
     protected const METHOD = 'POST';
     protected const URI = 'uri';
@@ -19,57 +19,59 @@ class RequestTest extends Guzzle\Tests\TestCase
     protected const BODY = 'body';
 
     /** @var Guzzle\Log\Request */
-    protected $fakeRequest;
+    protected $record = Guzzle\Log\Request::class;
 
-    protected function setUp(): void
+    public function testFailedValidate(): void
     {
-        parent::setUp();
-
-        $this->fakeRequest = new Guzzle\Log\Request();
+        $this->assertFalse($this->record->validate());
     }
 
+    /**
+     * @depends testFailedValidate
+     */
     public function testValidateMethod(): void
     {
-        $this->assertFalse($this->fakeRequest->validate('method'));
+        $this->record->method = static::METHOD;
 
-        $this->fakeRequest->method = static::METHOD;
-
-        $this->assertTrue($this->fakeRequest->validate('method'));
+        $this->assertTrue($this->record->validate('method'));
     }
 
+    /**
+     * @depends testFailedValidate
+     */
     public function testValidateUri(): void
     {
-        $this->assertFalse($this->fakeRequest->validate('uri'));
+        $this->record->uri = static::URI;
 
-        $this->fakeRequest->uri = static::URI;
-
-        $this->assertTrue($this->fakeRequest->validate('uri'));
+        $this->assertTrue($this->record->validate('uri'));
     }
 
+    /**
+     * @depends testFailedValidate
+     */
     public function testValidateHeaders(): void
     {
-        $this->assertFalse($this->fakeRequest->validate('headers'));
+        $this->record->headers = static::HEADERS;
 
-        $this->fakeRequest->headers = static::HEADERS;
-
-        $this->assertTrue($this->fakeRequest->validate('headers'));
+        $this->assertTrue($this->record->validate('headers'));
     }
 
+    /**
+     * @depends testFailedValidate
+     */
     public function testValidateBody(): void
     {
-        $this->fakeRequest->body = mt_rand();
-        $this->assertFalse($this->fakeRequest->validate('body'));
+        $this->record->body = static::BODY;
 
-        $this->fakeRequest->body = static::BODY;
-
-        $this->assertTrue($this->fakeRequest->validate('body'));
+        $this->assertTrue($this->record->validate('body'));
     }
 
     public function testFullValidate(): void
     {
-        $this->fakeRequest = Guzzle\Log\Request::create(
+        $this->record = Guzzle\Log\Request::create(
             new Request(static::METHOD, static::URI, static::HEADERS, static::BODY)
         );
-        $this->assertTrue($this->fakeRequest->save());
+
+        $this->assertTrue($this->record->save());
     }
 }
