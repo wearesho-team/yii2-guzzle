@@ -30,6 +30,16 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
     public $exclude = [];
 
     /**
+     * Guzzle client configuration settings.
+     * @see \GuzzleHttp\Client::__construct()
+     *
+     * Note: you can't use handler key
+     *
+     * @var array
+     */
+    public $config = [];
+
+    /**
      * @param base\Application $app
      *
      * @throws base\InvalidConfigException
@@ -81,11 +91,15 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
 
         \Yii::$container->set(
             GuzzleHttp\ClientInterface::class,
-            function ($container, $params, $config) use ($handlerStack) {
+            function (
+                /** @noinspection PhpUnusedParameterInspection */ $container,
+                $params,
+                $config
+            ) use ($handlerStack) {
                 return new GuzzleHttp\Client(...$params + [
                         0 => $config + [
                                 'handler' => $handlerStack,
-                            ]
+                            ] + $this->config,
                     ]);
             }
         );
