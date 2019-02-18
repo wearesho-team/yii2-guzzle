@@ -16,12 +16,10 @@ addons:
   postgresql: "10.0"
   apt:
     sources:
-      - mysql-5.7-trusty
-      packages:
-        - postgresql-10
-        - postgresql-client-10
-        - mysql-server
-        - mysql-client
+      - mysql-8
+    packages:
+      - postgresql-10
+      - postgresql-client-10
 
 env:
   - global:
