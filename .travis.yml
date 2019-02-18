@@ -13,13 +13,10 @@ php:
   - 7.3
 
 addons:
-  postgresql: "10.0"
+  postgresql: "9.6"
   apt:
     sources:
-      - mysql-8
-    packages:
-      - postgresql-10
-      - postgresql-client-10
+      - mysql-8.0-trusty
 
 env:
   - DB_TYPE=pgsql DB_NAME=yii2_guzzle DB_HOST=localhost DB_PORT=5432 DB_USERNAME=postgres DB_PASSWORD=root
