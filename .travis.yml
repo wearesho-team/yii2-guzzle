@@ -1,44 +1,43 @@
 language: php
 
 services:
-    - postgresql
-    - mysql
+  - postgresql
+  - mysql
+
+cache:
+  directories:
+    - $HOME/.composer/cache
 
 php:
-    - 7.2
-    - 7.3
+  - 7.2
+  - 7.3
 
 addons:
-  postgresql: "9.4"
+  postgresql: "10.0"
   apt:
-      sources:
-          - mysql-5.7-trusty
+    sources:
+      - mysql-5.7-trusty
       packages:
-          - mysql-server
-          - mysql-client
+        - postgresql-10
+        - postgresql-client-10
+        - mysql-server
+        - mysql-client
+
 env:
-    - DB_TYPE=pgsql
-      DB_NAME=yii2_guzzle
-      DB_HOST=localhost
-      DB_PORT=5432
-      DB_USERNAME=postgres
-      DB_PASSWORD=root
-    - DB_TYPE=mysql
-      DB_NAME=yii2_guzzle
-      DB_HOST=127.0.0.1
-      DB_PORT=3306
-      DB_USERNAME=root
-      DB_PASSWORD=
+  - global:
+      - PGPORT=5433
+  - DB_TYPE=pgsql DB_NAME=yii2_guzzle DB_HOST=localhost DB_PORT=5432 DB_USERNAME=postgres DB_PASSWORD=root
+  - DB_TYPE=mysql DB_NAME=yii2_guzzle DB_HOST=127.0.0.1 DB_PORT=3306 DB_USERNAME=root DB_PASSWORD=
 
 before_script:
-    - travis_retry composer self-update
-    - travis_retry composer install --no-interaction --prefer-source
-    - sh -c "if [ '$DB_TYPE' = 'pgsql' ]; then psql -c 'CREATE DATABASE yii2_guzzle;' -U postgres; fi"
-    - sh -c "if [ '$DB_TYPE' = 'mysql' ]; then mysql -e 'CREATE DATABASE IF NOT EXISTS yii2_guzzle;'; fi"
+  - travis_retry composer self-update
+  - travis_retry composer install --no-interaction --prefer-source
+  - sh -c "if [ '$DB_TYPE' = 'pgsql' ]; then psql -c 'CREATE DATABASE yii2_guzzle;' -U postgres; fi"
+  - sh -c "if [ '$DB_TYPE' = 'mysql' ]; then mysql -e 'CREATE DATABASE IF NOT EXISTS yii2_guzzle;'; fi"
 
 script:
-    - travis_retry composer lint
-    - travis_retry composer cover
+  - travis_retry composer lint
+  - travis_retry composer cover
 
 after_success:
-    - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
