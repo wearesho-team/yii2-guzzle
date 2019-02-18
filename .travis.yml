@@ -16,7 +16,10 @@ addons:
   postgresql: "9.6"
   apt:
     sources:
-      - mysql-8.0-trusty
+      - mysql-5.7-trusty
+    packages:
+      - mysql-server
+      - mysql-client
 
 env:
   - DB_TYPE=pgsql DB_NAME=yii2_guzzle DB_HOST=localhost DB_PORT=5432 DB_USERNAME=postgres DB_PASSWORD=root
