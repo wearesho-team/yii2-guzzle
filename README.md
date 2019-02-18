@@ -16,11 +16,15 @@ use Wearesho\Yii\Guzzle;
 
 return [
     'bootstrap' => [
-         'http-log' => [
-             'class' => Guzzle\Bootstrap::class,
-              // Add regular expression if you need exclude their from logging
-             'exclude' => ['/^.*(google).*$/iu'],
-         ],
+        'http-log' => [
+            'class' => Guzzle\Bootstrap::class,
+            // Add regular expression if you need exclude their from logging
+            'exclude' => ['/^.*(google).*$/iu'],
+            // Guzzle client configuration settings
+            'config' => [
+                'timeout' => 10,
+            ],
+        ],
     ],
 ];
 ```
