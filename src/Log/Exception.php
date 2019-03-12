@@ -62,9 +62,18 @@ class Exception extends db\ActiveRecord
 
     public static function create(\Throwable $exception, Request $logRequest): Exception
     {
+        $trace = array_map(function (array $data): array {
+            return array_intersect_key($data, array_flip([
+                'file',
+                'line',
+                'function',
+                'class',
+            ]));
+        }, $exception->getTrace());
+
         $logException = new static([
             'type' => get_class($exception),
-            'trace' => $exception->getTrace(),
+            'trace' => $trace,
             'request' => $logRequest,
         ]);
 

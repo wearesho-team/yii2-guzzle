@@ -87,4 +87,20 @@ class ExceptionTest extends TestCase
 
         $this->assertTrue($this->record->save());
     }
+
+    public function testTraceKeys(): void
+    {
+        $httpRequest = new Request('GET', 'uri', static::HEADERS);
+        $exception = new \Exception();
+        $log = Guzzle\Log\Exception::create($exception, Guzzle\Log\Request::create($httpRequest));
+        $this->assertGreaterThan(0, count($log->trace));
+        foreach ($log->trace as $trace) {
+            $this->assertArrayHasKey('file', $trace);
+            $this->assertArrayHasKey('line', $trace);
+            $this->assertArrayHasKey('function', $trace);
+            $this->assertArrayHasKey('class', $trace);
+            $this->assertArrayNotHasKey('args', $trace);
+            $this->assertArrayNotHasKey('type', $trace);
+        }
+    }
 }
