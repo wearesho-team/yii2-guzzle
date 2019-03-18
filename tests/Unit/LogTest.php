@@ -59,6 +59,30 @@ class LogTest extends Guzzle\Tests\TestCase
         $this->assertEquals($response->getStatusCode(), $logResponse->status);
     }
 
+    public function testNotUtf8Body(): void
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $body = GuzzleHttp\Psr7\stream_for(random_bytes(65536));
+
+        $this->setMocks(new GuzzleHttp\Psr7\Response(
+            static::STATUS_200,
+            [],
+            $body
+        ));
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $this->client->send(new GuzzleHttp\Psr7\Request(
+            static::METHOD_POST,
+            static::URI,
+            [],
+            GuzzleHttp\Psr7\stream_for(random_bytes(65536))
+        ));
+
+        $logResponse = Guzzle\Log\Response::find()->andWhere(['=', 'status', static::STATUS_200])->one();
+        $this->assertEquals(Guzzle\Log\Response::NOT_UTF_8_BODY, $logResponse->body);
+        $this->assertEquals(Guzzle\Log\Request::NOT_UTF_8_BODY, $logResponse->request->body);
+    }
+
     public function testResponseWithStatus400(): void
     {
         $this->setMocks(

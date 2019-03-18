@@ -20,6 +20,8 @@ use Carbon\Carbon;
  */
 class Response extends db\ActiveRecord
 {
+    public const NOT_UTF_8_BODY = Request::NOT_UTF_8_BODY;
+
     public static function tableName(): string
     {
         return 'http_response';
@@ -46,10 +48,11 @@ class Response extends db\ActiveRecord
     public function rules(): array
     {
         return [
-            [['http_request_id', 'status', 'headers',], 'required',],
+            [['http_request_id', 'status',], 'required',],
             [['http_request_id',], 'exist', 'targetRelation' => 'request',],
             [['http_request_id',], 'unique',],
             [['status',], 'integer', 'min' => 100, 'max' => 599,],
+            [['headers',], 'default', 'value' => [],],
             [['headers',], 'each', 'rule' => ['each', 'rule' => ['string'],],],
             [['body',], 'string',],
         ];
@@ -69,10 +72,15 @@ class Response extends db\ActiveRecord
 
     public static function create(ResponseInterface $response, Request $logRequest): Response
     {
+        $body = (string)$response->getBody();
+        if (!mb_check_encoding($body, "UTF-8")) {
+            $body = static::NOT_UTF_8_BODY;
+        }
+
         $logResponse = new static([
             'status' => $response->getStatusCode(),
             'headers' => $response->getHeaders(),
-            'body' => (string)$response->getBody(),
+            'body' => $body,
             'request' => $logRequest,
         ]);
 

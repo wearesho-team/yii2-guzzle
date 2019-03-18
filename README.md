@@ -31,6 +31,9 @@ return [
 2. Use `\Yii::$container` to instantiate [GuzzleHttp\Client](http://docs.guzzlephp.org) and send requests to log them
 3. Use [Guzzle\Log\Request](./src/Log/Request.php), [Guzzle\Log\Response](./src/Log/Response.php), [Guzzle\Log\Exception](./src/Log/Exception.php) to find logs
 
+Note: for not UTF-8 request or response body (for example, files)
+`(invalid UTF-8 bytes)` will be saved. 
+
 ## Contributors
 - [Alexander <horat1us> Letnikow](mailto:reclamme@gmail.com)
 - [Roman <KartaviK> Varkuta](mailto:roman.varkuta@gmail.com)
