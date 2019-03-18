@@ -20,6 +20,8 @@ use Psr\Http\Message\RequestInterface;
  */
 class Request extends db\ActiveRecord
 {
+    public const NOT_UTF_8_BODY = "(invalid UTF-8 bytes)";
+
     public static function tableName(): string
     {
         return 'http_request';
@@ -41,10 +43,11 @@ class Request extends db\ActiveRecord
     public function rules(): array
     {
         return [
-            [['method', 'uri', 'headers',], 'required',],
+            [['method', 'uri',], 'required',],
             [['method',], 'string', 'max' => 6,],
             [['method',], 'filter', 'filter' => 'mb_strtoupper',],
             [['uri',], 'string',],
+            [['headers',], 'default', 'value' => [],],
             [['headers',], 'each', 'rule' => ['each', 'rule' => ['string'],],],
             [['body',], 'string',],
         ];
@@ -52,11 +55,16 @@ class Request extends db\ActiveRecord
 
     public static function create(RequestInterface $request): Request
     {
+        $body = (string)$request->getBody();
+        if (!mb_check_encoding($body, 'UTF-8')) {
+            $body = static::NOT_UTF_8_BODY;
+        }
+
         $logRequest = new static([
             'method' => $request->getMethod(),
             'uri' => (string)$request->getUri(),
             'headers' => $request->getHeaders(),
-            'body' => (string)$request->getBody(),
+            'body' => $body,
         ]);
 
         /** @noinspection PhpUnhandledExceptionInspection */
