@@ -57,9 +57,9 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
             $this->appendMigrations($app, 'Wearesho\\Yii\\Guzzle\\Migrations');
         }
 
-        $handler = function (\Closure $handler) {
+        $handler = function (callable $handler) {
             return function (Message\RequestInterface $request, array $options) use ($handler) {
-                $handler = $handler($request, $options);
+                $handler = call_user_func($handler, $request, $options);
                 foreach ((array)$this->exclude as $domain) {
                     if (preg_match((string)$domain, (string)$request->getUri())) {
                         return $handler;
