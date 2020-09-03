@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Wearesho\Yii\Guzzle\Migrations;
 
 use Yii;
@@ -9,6 +8,7 @@ use yii\db\Migration;
 class M200903000000CreateHttpView extends Migration
 {
     private const VIEW_NAME = 'http_view';
+
     public function safeUp(): void
     {
         $this->getDb()
@@ -30,7 +30,7 @@ SQL
             )
             ->execute();
         $this->createIndex(
-            'i_'.static::VIEW_NAME,
+            'i_' . static::VIEW_NAME,
             static::VIEW_NAME,
             'uri'
         );
