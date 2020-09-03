@@ -1,12 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wearesho\Yii\Guzzle\Migrations;
 
-use Yii;
-use yii\db\Migration;
+use yii\db;
 
-class M200903000000CreateHttpView extends Migration
+class M200903000000CreateHttpView extends db\Migration
 {
+    /**
+     * {@inheritdoc}
+     */
     public function safeUp(): void
     {
         $this->getDb()
@@ -31,7 +33,7 @@ SQL
 
     public function safeDown(): void
     {
-        Yii::$app->db
+        $this->getDb()
             ->createCommand(
                 'drop view http_view;'
             )

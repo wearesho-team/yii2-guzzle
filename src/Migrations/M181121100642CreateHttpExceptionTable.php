@@ -1,13 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wearesho\Yii\Guzzle\Migrations;
 
-use yii\db\Migration;
+use yii\db;
 
 /**
  * Class M181121100642CreateHttpExceptionTable
  */
-class M181121100642CreateHttpExceptionTable extends Migration
+class M181121100642CreateHttpExceptionTable extends db\Migration
 {
     /**
      * {@inheritdoc}

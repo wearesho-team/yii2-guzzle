@@ -1,15 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wearesho\Yii\Guzzle\Migrations;
 
-use yii\db\Migration;
+use yii\db;
 
 /**
  * Class M181121100620CreateHttpRequestTable
  */
-class M181121100620CreateHttpRequestTable extends Migration
+class M181121100620CreateHttpRequestTable extends db\Migration
 {
-    private const TABLE_NAME = 'http_request';
     /**
      * {@inheritdoc}
      */
@@ -23,11 +22,6 @@ class M181121100620CreateHttpRequestTable extends Migration
             'body' => $this->text()->notNull(),
             'created_at' => $this->timestamp()->notNull()->defaultExpression('now()'),
         ]);
-        $this->createIndex(
-            'i_' . static::TABLE_NAME,
-            static::TABLE_NAME,
-            'uri'
-        );
     }
 
     /**
