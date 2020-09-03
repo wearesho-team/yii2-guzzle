@@ -14,8 +14,8 @@ class M200903000001CreateHttpRequestUrlIndex extends db\Migration
     public function safeUp(): void
     {
         if ($this->db->driverName === 'mysql') {
-            $this->execute(/** @lang MySQL */ `
-                CREATE INDEX i_http_request_uri
+            $this->execute(/** @lang MySQL */
+                `CREATE INDEX i_http_request_uri
                 ON http_request (uri);`
             );
         } else {
