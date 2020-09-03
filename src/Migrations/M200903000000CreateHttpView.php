@@ -11,7 +11,7 @@ class M200903000000CreateHttpView extends Migration
     private const VIEW_NAME = 'http_view';
     public function safeUp(): void
     {
-        Yii::$app->db
+        $this->getDb()
             ->createCommand(<<<SQL
 create view http_view as
 select req.uri,
