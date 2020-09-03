@@ -9,6 +9,7 @@ use yii\db\Migration;
  */
 class M181121100620CreateHttpRequestTable extends Migration
 {
+    private const TABLE_NAME = 'http_request';
     /**
      * {@inheritdoc}
      */
@@ -22,6 +23,11 @@ class M181121100620CreateHttpRequestTable extends Migration
             'body' => $this->text()->notNull(),
             'created_at' => $this->timestamp()->notNull()->defaultExpression('now()'),
         ]);
+        $this->createIndex(
+            'i_' . static::TABLE_NAME,
+            static::TABLE_NAME,
+            'uri'
+        );
     }
 
     /**

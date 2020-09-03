@@ -7,8 +7,6 @@ use yii\db\Migration;
 
 class M200903000000CreateHttpView extends Migration
 {
-    private const VIEW_NAME = 'http_view';
-
     public function safeUp(): void
     {
         $this->getDb()
@@ -29,11 +27,6 @@ order by req.id desc
 SQL
             )
             ->execute();
-        $this->createIndex(
-            'i_' . static::VIEW_NAME,
-            static::VIEW_NAME,
-            'uri'
-        );
     }
 
     public function safeDown(): void
