@@ -12,10 +12,10 @@ use yii\db;
  * @package Wearesho\Yii\Guzzle\Log
  * @property string $uri
  * @property string $method
- * @property $headers
+ * @property string $headers
  * @property string $body
  * @property integer $status
- * @property $response_headers
+ * @property string $response_headers
  * @property string $response_body
  * @property string $request_at
  * @property string $response_at
