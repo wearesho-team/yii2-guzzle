@@ -9,10 +9,9 @@ class M200903000000CreateHttpView extends db\Migration
     /**
      * {@inheritdoc}
      */
-    public function safeUp(): void
+    public function up(): void
     {
-        $this->getDb()
-            ->createCommand(<<<SQL
+        $this->execute(<<<SQL
 create view http_view as
 select req.uri,
        req.method,
@@ -27,16 +26,11 @@ from http_request req
          inner join http_response res on res.http_request_id = req.id
 order by req.id desc
 SQL
-            )
-            ->execute();
+        );
     }
 
-    public function safeDown(): void
+    public function down(): void
     {
-        $this->getDb()
-            ->createCommand(
-                'drop view http_view;'
-            )
-            ->execute();
+        $this->execute('drop view if exists http_view;');
     }
 }

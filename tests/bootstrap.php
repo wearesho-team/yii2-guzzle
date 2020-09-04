@@ -5,9 +5,6 @@ if (file_exists(dirname(__DIR__) . DIRECTORY_SEPARATOR . '.env')) {
     $dotEnv->load();
 }
 
-getenv('DB_PATH') || putenv("DB_PATH=" . __DIR__ . '/db.sqlite');
-
-
 \Yii::setAlias(
     '@Wearesho/Yii/Guzzle',
     dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src'
