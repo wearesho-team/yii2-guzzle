@@ -19,7 +19,7 @@ class M200903000001CreateHttpRequestUrlIndex extends db\Migration
                 . static::TABLE_NAME . "(uri(200))");
         } else {
             $this->createIndex(
-                self::INDEX_NAME,
+                static::INDEX_NAME,
                 static::TABLE_NAME,
                 'uri'
             );
@@ -28,10 +28,6 @@ class M200903000001CreateHttpRequestUrlIndex extends db\Migration
 
     public function safeDown()
     {
-        if ($this->db->driverName === 'mysql') {
-            $this->execute(/** @lang MySQL */ "DROP INDEX " . static::INDEX_NAME . " ON " . static::TABLE_NAME);
-        } else {
-            $this->execute("DROP INDEX " . static::INDEX_NAME);
-        }
+        $this->dropIndex(static::INDEX_NAME, static::TABLE_NAME);
     }
 }
