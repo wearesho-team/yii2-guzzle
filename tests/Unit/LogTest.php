@@ -24,13 +24,11 @@ class LogTest extends Guzzle\Tests\TestCase
     protected const EXCEPTION_MESSAGE = 'message';
     protected const EXCLUDE_DOMAIN = 'www.exclude_example.com';
 
-    /** @var array */
-    protected $historyContainer = [];
+    protected array $historyContainer = [];
 
-    /** @var GuzzleHttp\Client */
-    protected $client;
+    protected GuzzleHttp\Client $client;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

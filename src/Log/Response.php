@@ -1,12 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wearesho\Yii\Guzzle\Log;
 
-use yii\db;
-use yii\behaviors;
-use Horat1us\Yii\Exceptions\ModelException;
 use Psr\Http\Message\ResponseInterface;
-use Carbon\Carbon;
+use Horat1us\Yii\CarbonBehavior;
+use Horat1us\Yii\Validation;
+use yii\db;
 
 /**
  * Class Response
@@ -27,7 +26,7 @@ class Response extends db\ActiveRecord
         return 'http_response';
     }
 
-    public static function primaryKey()
+    public static function primaryKey(): array
     {
         return ['http_request_id'];
     }
@@ -36,11 +35,8 @@ class Response extends db\ActiveRecord
     {
         return [
             'ts' => [
-                'class' => behaviors\TimestampBehavior::class,
+                'class' => CarbonBehavior::class,
                 'updatedAtAttribute' => false,
-                'value' => function (): string {
-                    return Carbon::now()->toDateTimeString();
-                },
             ],
         ];
     }
@@ -84,8 +80,7 @@ class Response extends db\ActiveRecord
             'request' => $logRequest,
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
-        ModelException::saveOrThrow($logResponse);
+        Validation\Exception::saveOrThrow($logResponse);
 
         return $logResponse;
     }

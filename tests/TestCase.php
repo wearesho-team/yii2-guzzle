@@ -1,23 +1,23 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wearesho\Yii\Guzzle\Tests;
 
-use Wearesho\Yii\Guzzle\Bootstrap;
+use Horat1us\Yii\PHPUnit;
 use yii\helpers;
-use yii\phpunit;
 
-/**
- * Class TestCase
- * @package Wearesho\Yii\Guzzle\Tests
- * @internal
- */
-class TestCase extends phpunit\TestCase
+class TestCase extends PHPUnit\TestCase
 {
+    protected function setUp(): void
+    {
+        \Yii::setAlias('@configFile', __DIR__ . DIRECTORY_SEPARATOR . 'config.php');
+        parent::setUp();
+    }
+
     public function globalFixtures(): array
     {
         $fixtures = [
             [
-                'class' => phpunit\MigrateFixture::class,
+                'class' => PHPUnit\MigrateFixture::class,
                 'migrationNamespaces' => [
                     'Wearesho\\Yii\\Guzzle\\Migrations',
                 ],

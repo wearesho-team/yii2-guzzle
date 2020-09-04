@@ -9,11 +9,10 @@ cache:
     - $HOME/.composer/cache
 
 php:
-  - 7.2
-  - 7.3
+  - 7.4
 
 addons:
-  postgresql: "9.6"
+  postgresql: "9.4"
   apt:
     sources:
       - mysql-5.7-trusty
@@ -22,8 +21,8 @@ addons:
       - mysql-client
 
 env:
-  - DB_TYPE=pgsql DB_NAME=yii2_guzzle DB_HOST=localhost DB_PORT=5432 DB_USERNAME=postgres DB_PASSWORD=root
-  - DB_TYPE=mysql DB_NAME=yii2_guzzle DB_HOST=127.0.0.1 DB_PORT=3306 DB_USERNAME=root DB_PASSWORD=
+  - DB_TYPE=pgsql DB_DSN=pgsql:dbname=yii2_guzzle;host=localhost DB_USERNAME=postgres DB_PASSWORD=root
+  - DB_TYPE=mysql DB_DSN=mysql:dbname=yii2_guzzle;host=localhost DB_USERNAME=root DB_PASSWORD=
 
 before_script:
   - travis_retry composer self-update

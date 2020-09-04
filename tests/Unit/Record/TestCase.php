@@ -14,7 +14,7 @@ class TestCase extends Guzzle\Tests\TestCase
     /** @var ActiveRecord */
     protected $record = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

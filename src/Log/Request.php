@@ -1,12 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wearesho\Yii\Guzzle\Log;
 
+use Horat1us\Yii\CarbonBehavior;
 use yii\db;
-use yii\behaviors;
-use Carbon\Carbon;
-use Horat1us\Yii\Exceptions\ModelException;
 use Psr\Http\Message\RequestInterface;
+use Horat1us\Yii\Validation;
 
 /**
  * Class Request
@@ -31,11 +30,8 @@ class Request extends db\ActiveRecord
     {
         return [
             'ts' => [
-                'class' => behaviors\TimestampBehavior::class,
+                'class' => CarbonBehavior::class,
                 'updatedAtAttribute' => false,
-                'value' => function (): string {
-                    return Carbon::now()->toDateTimeString();
-                },
             ],
         ];
     }
@@ -67,8 +63,7 @@ class Request extends db\ActiveRecord
             'body' => $body,
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
-        ModelException::saveOrThrow($logRequest);
+        Validation\Exception::saveOrThrow($logRequest);
 
         return $logRequest;
     }
