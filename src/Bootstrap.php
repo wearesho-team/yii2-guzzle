@@ -15,8 +15,6 @@ use yii\console;
  */
 class Bootstrap extends base\BaseObject implements base\BootstrapInterface
 {
-    use BootstrapMigrations;
-
     /**
      * URLs that should not be logged.
      * They will be compared as regular expression.
@@ -46,15 +44,14 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
      */
     public function bootstrap($app)
     {
+        if ($app instanceof console\Application) {
+            (new Migrations\Bootstrap)->bootstrap($app);
+        }
+
         foreach ((array)$this->exclude as $regular) {
             if (@preg_match($regular, '') === false) {
                 throw new base\InvalidConfigException("Given regular expression invalid: " . $regular);
             }
-        }
-        \Yii::setAlias('Wearesho/Yii/Guzzle', '@vendor/wearesho-team/yii2-guzzle/src');
-
-        if ($app instanceof console\Application) {
-            $this->appendMigrations($app, 'Wearesho\\Yii\\Guzzle\\Migrations');
         }
 
         $handler = function (callable $handler) {

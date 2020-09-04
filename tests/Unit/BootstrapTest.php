@@ -14,22 +14,6 @@ use Wearesho\Yii\Guzzle\Tests\TestCase;
  */
 class BootstrapTest extends TestCase
 {
-    protected $aliases;
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->aliases = \Yii::$aliases;
-    }
-
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        \Yii::$aliases = $this->aliases;
-    }
-
     public function testBootstrapApp(): void
     {
         $bootstrap = new Bootstrap([
@@ -39,10 +23,6 @@ class BootstrapTest extends TestCase
             ],
         ]);
         $bootstrap->bootstrap($this->app);
-        $this->assertEquals(
-            \Yii::getAlias('@vendor/wearesho-team/yii2-guzzle/src'),
-            \Yii::getAlias('@Wearesho/Yii/Guzzle')
-        );
 
         /** @var GuzzleHttp\Client $client */
         $client = \Yii::$container->get(GuzzleHttp\ClientInterface::class);

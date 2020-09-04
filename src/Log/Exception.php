@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wearesho\Yii\Guzzle\Log;
 
+use Horat1us\Yii\CarbonBehavior;
+use Horat1us\Yii\Validation;
 use yii\db;
-use yii\behaviors;
-use Horat1us\Yii\Exceptions\ModelException;
-use Carbon\Carbon;
 
 /**
  * Class Exception
@@ -28,11 +27,8 @@ class Exception extends db\ActiveRecord
     {
         return [
             'ts' => [
-                'class' => behaviors\TimestampBehavior::class,
+                'class' => CarbonBehavior::class,
                 'updatedAtAttribute' => false,
-                'value' => function (): string {
-                    return Carbon::now()->toDateTimeString();
-                },
             ],
         ];
     }
@@ -62,23 +58,22 @@ class Exception extends db\ActiveRecord
 
     public static function create(\Throwable $exception, Request $logRequest): Exception
     {
-        $trace = array_map(function (array $data): array {
-            return array_intersect_key($data, array_flip([
+        $trace = array_map(
+            fn(array $data): array => array_intersect_key($data, array_flip([
                 'file',
                 'line',
                 'function',
                 'class',
-            ]));
-        }, $exception->getTrace());
-
+            ])),
+            $exception->getTrace()
+        );
         $logException = new static([
             'type' => get_class($exception),
             'trace' => $trace,
             'request' => $logRequest,
         ]);
 
-        /** @noinspection PhpUnhandledExceptionInspection */
-        ModelException::saveOrThrow($logException);
+        Validation\Exception::saveOrThrow($logException);
 
         return $logException;
     }
