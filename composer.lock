@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "89d1c1da4e5f24f33c134b1bd9ba2d9e",
+    "content-hash": "753e62d446b17001adc6d3b0c36f0a82",
     "packages": [
         {
             "name": "bower-asset/inputmask",
@@ -1768,16 +1768,16 @@
         },
         {
             "name": "horat1us/yii2-phpunit",
-            "version": "0.0.3",
+            "version": "0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Horat1us/yii2-phpunit.git",
-                "reference": "c6a7d0f350f720273e003e5cc2cb2f847fbfbabb"
+                "reference": "b690ed17bb3c7d47e795e59ea4d43632abc0de75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Horat1us/yii2-phpunit/zipball/c6a7d0f350f720273e003e5cc2cb2f847fbfbabb",
-                "reference": "c6a7d0f350f720273e003e5cc2cb2f847fbfbabb",
+                "url": "https://api.github.com/repos/Horat1us/yii2-phpunit/zipball/b690ed17bb3c7d47e795e59ea4d43632abc0de75",
+                "reference": "b690ed17bb3c7d47e795e59ea4d43632abc0de75",
                 "shasum": ""
             },
             "require": {
@@ -1811,7 +1811,7 @@
                 }
             ],
             "description": "Yii 2 PHPUnit compatibility layer and enhancements",
-            "time": "2020-09-04T11:28:33+00:00"
+            "time": "2020-09-04T13:21:05+00:00"
         },
         {
             "name": "myclabs/deep-copy",
