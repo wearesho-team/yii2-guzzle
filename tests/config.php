@@ -1,28 +1,17 @@
 <?php
 
-use yii\helpers\ArrayHelper;
-use yii\db\Connection;
-
-$localConfig = __DIR__ . DIRECTORY_SEPARATOR . 'config-local.php';
-$dbType = getenv('DB_TYPE');
-$host = getenv('DB_HOST');
-$name = getenv("DB_NAME");
-$port = getenv("DB_PORT");
-$dsn = "{$dbType}:host={$host};dbname={$name};port={$port}";
-$config = [
+return [
     'id' => 'yii2-guzzle',
     'basePath' => dirname(__DIR__),
     'components' => [
         'db' => [
-            'class' => Connection::class,
-            'dsn' => $dsn,
+            'class' => \yii\db\Connection::class,
+            'dsn' => getenv('DB_DSN'),
             'username' => getenv("DB_USERNAME"),
             'password' => getenv("DB_PASSWORD") ?: null,
         ],
     ],
+    'bootstrap' => [
+        Wearesho\Yii\Guzzle\Migrations\Bootstrap::class,
+    ]
 ];
-
-return ArrayHelper::merge(
-    $config,
-    is_file($localConfig) ? require $localConfig : []
-);
