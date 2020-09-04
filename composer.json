@@ -11,6 +11,7 @@
     "yiisoft/yii2": "^2.0.15"
   },
   "require-dev": {
+    "horat1us/yii2-asset-free": "^1.0",
     "horat1us/yii2-phpunit": "0.0.4",
     "squizlabs/php_codesniffer": "^3.5"
   },
