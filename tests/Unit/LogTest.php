@@ -9,7 +9,7 @@ use Wearesho\Yii\Guzzle;
 /**
  * Class LogTest
  * @package Wearesho\Yii\Guzzle\Tests\Unit
- * @covers \Wearesho\Yii\Guzzle\Bootstrap::bootstrap()
+ * @covers \Wearesho\Yii\Guzzle\Log\Middleware
  * @internal
  */
 class LogTest extends Guzzle\Tests\TestCase
@@ -28,27 +28,13 @@ class LogTest extends Guzzle\Tests\TestCase
 
     protected GuzzleHttp\Client $client;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        /**
-         * @noinspection PhpUnhandledExceptionInspection
-         * @var GuzzleHttp\Client $client
-         */
-        $this->client = $this->container->get(GuzzleHttp\ClientInterface::class);
-        $this->client
-            ->getConfig('handler')
-            ->push(GuzzleHttp\Middleware::history($this->historyContainer));
-    }
-
     public function testResponseWithStatus200(): void
     {
         $this->setMocks($this->mockResponse());
-
         $request = $this->mockRequest();
         /** @noinspection PhpUnhandledExceptionInspection */
         $response = $this->client->send($request);
+        /** @var Guzzle\Log\Response $logResponse */
         $logResponse = Guzzle\Log\Response::find()->andWhere(['=', 'status', static::STATUS_200])->one();
 
         $this->assertEquals($response->getHeaders(), $logResponse->headers);
@@ -60,7 +46,7 @@ class LogTest extends Guzzle\Tests\TestCase
     public function testNotUtf8Body(): void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
-        $body = GuzzleHttp\Psr7\stream_for(random_bytes(65536));
+        $body = GuzzleHttp\Psr7\Utils::streamFor(random_bytes(65536));
 
         $this->setMocks(new GuzzleHttp\Psr7\Response(
             static::STATUS_200,
@@ -73,9 +59,10 @@ class LogTest extends Guzzle\Tests\TestCase
             static::METHOD_POST,
             static::URI,
             [],
-            GuzzleHttp\Psr7\stream_for(random_bytes(65536))
+            GuzzleHttp\Psr7\Utils::streamFor(random_bytes(65536))
         ));
 
+        /** @var Guzzle\Log\Response $logResponse */
         $logResponse = Guzzle\Log\Response::find()->andWhere(['=', 'status', static::STATUS_200])->one();
         $this->assertEquals(Guzzle\Log\Response::NOT_UTF_8_BODY, $logResponse->body);
         $this->assertEquals(Guzzle\Log\Request::NOT_UTF_8_BODY, $logResponse->request->body);
@@ -91,6 +78,7 @@ class LogTest extends Guzzle\Tests\TestCase
         $request = $this->mockRequest();
         /** @noinspection PhpUnhandledExceptionInspection */
         $response = $this->client->send($request);
+        /** @var Guzzle\Log\Response $logResponse */
         $logResponse = Guzzle\Log\Response::find()->andWhere(['=', 'status', static::STATUS_200])->one();
 
         $this->assertEquals($response->getHeaders(), $logResponse->headers);
@@ -102,6 +90,7 @@ class LogTest extends Guzzle\Tests\TestCase
             /** @noinspection PhpUnhandledExceptionInspection */
             $this->client->send($request);
         } catch (\Exception $exception) {
+            /** @var Guzzle\Log\Response $logResponse */
             $logResponse = Guzzle\Log\Response::find()->andWhere(['=', 'status', static::STATUS_400])->one();
 
             $this->assertEquals(
@@ -118,12 +107,13 @@ class LogTest extends Guzzle\Tests\TestCase
     {
         $request = $this->mockRequest();
         $this->setMocks(
-            $this->mockResponse(),
-            $this->mockBadResponseException($request)
+            $response = $this->mockResponse(),
+            $this->mockBadResponseException($request, $response)
         );
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $response = $this->client->send($request);
+        /** @var Guzzle\Log\Response $logResponse */
         $logResponse = Guzzle\Log\Response::find()->andWhere(['=', 'status', static::STATUS_200])->one();
 
         $this->assertEquals($response->getHeaders(), $logResponse->headers);
@@ -147,7 +137,6 @@ class LogTest extends Guzzle\Tests\TestCase
         $this->setMocks(
             $this->mockBadResponseException(
                 $request,
-                static::EXCEPTION_MESSAGE,
                 $response
             )
         );
@@ -156,7 +145,9 @@ class LogTest extends Guzzle\Tests\TestCase
             /** @noinspection PhpUnhandledExceptionInspection */
             $this->client->send($request);
         } catch (\Exception $ex) {
+            /** @var Guzzle\Log\Exception $logException */
             $logException = Guzzle\Log\Exception::find()->andWhere(['=', 'type', get_class($ex)])->one();
+            /** @var Guzzle\Log\Response $logResponse */
             $logResponse = Guzzle\Log\Response::find()->andWhere(['=', 'status', static::STATUS_400])->one();
             $this->assertSame($logException->type, get_class($ex));
             $this->assertEquals($response->getHeaders(), $logResponse->headers);
@@ -170,15 +161,17 @@ class LogTest extends Guzzle\Tests\TestCase
     {
         $request = $this->mockRequest();
         $excludeDomainRegexRequest = $this->mockRequest('GET', 'php.net');
+        $excludeDomainRegexRequestSecond = $this->mockRequest('GET', 'https://www.zsu.gov.ua/');
         $this->setMocks(
-            $this->mockResponse(201, [['header_1' => 'test']], 'body'),
-            $this->mockResponse(404, [['header_2' => true]], json_encode(['json' => []])),
-            $this->mockBadResponseException($excludeDomainRegexRequest),
-            $this->mockBadResponseException($excludeDomainRegexRequest)
+            $responseFirst = $this->mockResponse(201, [['header_1' => 'test']], 'body'),
+            $responseSecond = $this->mockResponse(404, [['header_2' => true]], json_encode(['json' => []])),
+            $this->mockBadResponseException($excludeDomainRegexRequest, $responseFirst),
+            $this->mockBadResponseException($excludeDomainRegexRequestSecond, $responseSecond)
         );
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $response = $this->client->send($request);
+        /** @var Guzzle\Log\Response $logResponse */
         $logResponse = Guzzle\Log\Response::find()->andWhere(['=', 'status', 201])->one();
 
         $this->assertEquals($response->getHeaders(), $logResponse->headers);
@@ -190,6 +183,7 @@ class LogTest extends Guzzle\Tests\TestCase
             /** @noinspection PhpUnhandledExceptionInspection */
             $this->client->send($request);
         } catch (\Exception $ex) {
+            /** @var Guzzle\Log\Response $logException */
             $logException = Guzzle\Log\Response::find()->andWhere(['=', 'status', 404])->one();
             $this->assertSame($logException->body, json_encode(['json' => []]));
         }
@@ -204,7 +198,7 @@ class LogTest extends Guzzle\Tests\TestCase
 
         try {
             /** @noinspection PhpUnhandledExceptionInspection */
-            $this->client->send($excludeDomainRegexRequest);
+            $this->client->send($excludeDomainRegexRequestSecond);
         } catch (\Exception $ex) {
             $logException = Guzzle\Log\Exception::find()->andWhere(['=', 'type', get_class($ex)])->one();
             $this->assertNull($logException);
@@ -217,9 +211,22 @@ class LogTest extends Guzzle\Tests\TestCase
 
     protected function setMocks(object ...$mocks): void
     {
-        $this->client->getConfig('handler')->setHandler(
-            new GuzzleHttp\Handler\MockHandler($mocks)
-        );
+        /**
+         * @noinspection PhpUnhandledExceptionInspection
+         * @var GuzzleHttp\Client $client
+         */
+        $mockHandler = new GuzzleHttp\Handler\MockHandler($mocks);
+        $handlerStack = GuzzleHttp\HandlerStack::create($mockHandler);
+        $handlerStack->push(new Guzzle\Log\Middleware([
+            '/php\.net/',
+            function (Message\RequestInterface $request) {
+                $host = $request->getUri()->getHost();
+                return $host === 'www.zsu.gov.ua';
+            },
+        ]));
+        $this->client = new GuzzleHttp\Client([
+            'handler' => $handlerStack
+        ]);
     }
 
     protected function mockResponse(
@@ -241,8 +248,8 @@ class LogTest extends Guzzle\Tests\TestCase
 
     protected function mockBadResponseException(
         Message\RequestInterface $request,
+        Message\ResponseInterface $response,
         string $message = self::EXCEPTION_MESSAGE,
-        Message\ResponseInterface $response = null,
         \Exception $previous = null
     ) {
         return new GuzzleHttp\Exception\BadResponseException($message, $request, $response, $previous);

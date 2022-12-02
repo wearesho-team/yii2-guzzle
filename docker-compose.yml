@@ -1,0 +1,21 @@
+version: '3.3'
+services:
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: 'yii2_guzzle'
+      MYSQL_USER: 'yii2_guzzle'
+      MYSQL_PASSWORD: 'demo'
+      MYSQL_ROOT_PASSWORD: 'root_password'
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - '3311:3306'
+    expose:
+      - '3306'
+  pgsql:
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_USER=yii2_guzzle
+      - POSTGRES_PASSWORD=yii2_guzzle
+    ports:
+      - '5511:5432'

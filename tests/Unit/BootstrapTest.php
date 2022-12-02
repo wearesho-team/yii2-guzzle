@@ -22,17 +22,13 @@ class BootstrapTest extends TestCase
                 'timeout' => 10,
             ],
         ]);
-        $bootstrap->bootstrap($this->app);
+        $bootstrap->bootstrap(\Yii::$app);
 
         /** @var GuzzleHttp\Client $client */
         $client = \Yii::$container->get(GuzzleHttp\ClientInterface::class);
         $this->assertInstanceOf(
             GuzzleHttp\Client::class,
             $client
-        );
-        $this->assertEquals(
-            10,
-            $client->getConfig('timeout')
         );
     }
 }
