@@ -53,12 +53,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             \Yii::getAlias('@' . str_replace('\\', '/', $this->getMigrationNamespace()))
         );
 
-        /** @var \DirectoryIterator $file $file */
-        foreach (new \DirectoryIterator($migrationsDir) as $file) {
-            if (!$file->isFile()) {
+        foreach (scandir($migrationsDir) as $file) {
+            if (is_dir($migrationsDir . DIRECTORY_SEPARATOR . $file)) {
                 continue;
             }
-            $class = $this->getMigrationNamespace() . '\\' . str_replace('.php', '', $file->getFilename());
+            $class = $this->getMigrationNamespace() . '\\' . str_replace('.php', '', $file);
 
             $migration = new $class();
             if (!$migration instanceof db\Migration) {
