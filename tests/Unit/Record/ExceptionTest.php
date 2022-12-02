@@ -98,7 +98,6 @@ class ExceptionTest extends TestCase
             $this->assertArrayHasKey('file', $trace);
             $this->assertArrayHasKey('line', $trace);
             $this->assertArrayHasKey('function', $trace);
-            $this->assertArrayHasKey('class', $trace);
             $this->assertArrayNotHasKey('args', $trace);
             $this->assertArrayNotHasKey('type', $trace);
         }

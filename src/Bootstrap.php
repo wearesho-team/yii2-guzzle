@@ -2,7 +2,6 @@
 
 namespace Wearesho\Yii\Guzzle;
 
-use Horat1us\Yii\Traits\BootstrapMigrations;
 use GuzzleHttp;
 use Psr\Http\Message;
 use Wearesho\Yii\Guzzle\Log;
@@ -25,7 +24,7 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
      *
      * @example '/^(https|http):\/\/maps.googleapis.com\/.*$/' Will exclude urls to google api from logging
      */
-    public $exclude = [];
+    public array $exclude = [];
 
     /**
      * Guzzle client configuration settings.
@@ -35,7 +34,7 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
      *
      * @var array
      */
-    public $config = [];
+    public array $config = [];
 
     /**
      * @param base\Application $app
@@ -45,7 +44,7 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
     public function bootstrap($app)
     {
         if ($app instanceof console\Application) {
-            (new Migrations\Bootstrap)->bootstrap($app);
+            (new Migrations\Bootstrap())->bootstrap($app);
         }
 
         foreach ((array)$this->exclude as $regular) {
@@ -54,42 +53,17 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
             }
         }
 
-        $handler = function (callable $handler) {
-            return function (Message\RequestInterface $request, array $options) use ($handler) {
-                $handler = call_user_func($handler, $request, $options);
-                foreach ((array)$this->exclude as $domain) {
-                    if (preg_match((string)$domain, (string)$request->getUri())) {
-                        return $handler;
-                    }
-                }
+        $middleware = new Log\Middleware($this->exclude);
+        \Yii::$container->setSingleton(Log\Middleware::class, fn() => $middleware);
 
-                $logRequest = Log\Request::create($request);
-                return $handler->then(
-                    function (Message\ResponseInterface $response) use ($logRequest) {
-                        Log\Response::create($response, $logRequest);
-                        return $response;
-                    },
-                    function ($reason) use ($logRequest) {
-                        $reason instanceof \Throwable && Log\Exception::create($reason, $logRequest);
-                        $response = $reason instanceof GuzzleHttp\Exception\RequestException
-                            ? $reason->getResponse()
-                            : null;
-                        if ($response) {
-                            Log\Response::create($response, $logRequest);
-                        }
-
-                        return GuzzleHttp\Promise\rejection_for($reason);
-                    }
-                );
-            };
-        };
         $handlerStack = GuzzleHttp\HandlerStack::create();
-        $handlerStack->push($handler);
+        $handlerStack->push($middleware);
+        \Yii::$container->setSingleton(GuzzleHttp\HandlerStack::class, fn() => $handlerStack);
 
         \Yii::$container->set(
             GuzzleHttp\ClientInterface::class,
             function (
-                /** @noinspection PhpUnusedParameterInspection */ $container,
+                $container,
                 $params,
                 $config
             ) use ($handlerStack) {

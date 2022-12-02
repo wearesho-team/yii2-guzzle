@@ -16,11 +16,11 @@
         </testsuite>
     </testsuites>
     <php>
-        <env name="DB_TYPE" value="mysql" />
+        <env name="DB_TYPE" value="pgsql" />
         <env name="DB_HOST" value="127.0.0.1" />
         <env name="DB_NAME" value="yii2_guzzle" />
-        <env name="DB_USER" value="root" />
-        <env name="DB_PASS" value="root_password" />
-        <env name="DB_PORT" value="3311" />
+        <env name="DB_USER" value="yii2_guzzle" />
+        <env name="DB_PASS" value="yii2_guzzle" />
+        <env name="DB_PORT" value="5511" />
     </php>
 </phpunit>
