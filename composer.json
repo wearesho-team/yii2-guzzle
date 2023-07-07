@@ -8,7 +8,8 @@
     "horat1us/yii2-carbon-behavior": "^1.2",
     "horat1us/yii2-migration-bootstrap": "^1.3",
     "horat1us/yii2-validation-exception": "^1.1",
-    "yiisoft/yii2": "^2.0.47"
+    "yiisoft/yii2": "^2.0.47",
+    "yiisoft/yii2-queue": "^2.3"
   },
   "require-dev": {
     "ext-json": "*",

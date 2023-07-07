@@ -10,3 +10,5 @@
 /.github export-ignore
 /phpunit.pgsql.xml export-ignore
 /composer.lock export-ignore
+/CHANGELOG.md export-ignore
+/docker-compose.yml export-ignore

@@ -8,7 +8,7 @@ Library for storing http queries into database
 
 ## Installation
 ```bash
-composer require wearesho-team/yii2-guzzle
+composer require wearesho-team/yii2-guzzle:^2.0
 ```
 
 ## Usage
@@ -43,6 +43,48 @@ return [
 
 Note: for not UTF-8 request or response body (for example, files)
 `(invalid UTF-8 bytes)` will be saved.
+
+### Log using Queue
+Sometimes it is not possible to use synchronous saving of query logs
+when the query was executed during an initiated database transaction. 
+In this case it is possible that the transaction will not be saved
+and the logs will be lost.
+
+The recommended solution is to use [QueueRepository](./src/Log/QueueRepository.php)
+to save the logs. To do this, configure Bootstrap this way:
+
+```php
+<?php
+
+use Wearesho\Yii\Guzzle;
+use Psr\Http\Message\RequestInterface;
+
+return [
+    'bootstrap' => [
+        'http-log' => [
+            'class' => Guzzle\Bootstrap::class,
+            // Here you configure repository
+            'repository' => [
+                'class' => Guzzle\Log\QueueRepository::class,
+            ],
+            // Logs exclude rules
+            'exclude' => [
+                // your rules
+            ],
+            // Guzzle client configuration settings
+            'config' => [
+                'timeout' => 10,
+            ],
+        ],
+    ],
+];
+```
+
+Also, you have the option to implement your own
+[RepositoryInterface](./src/Log/RepositoryInterface.php) and use it.
+
+## TODO
+- Tests for [Job](./src/Log/Job.php)
 
 ## Contributors
 - [Alexander <horat1us> Letnikow](mailto:reclamme@gmail.com)

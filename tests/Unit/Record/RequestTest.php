@@ -68,8 +68,11 @@ class RequestTest extends TestCase
 
     public function testFullValidate(): void
     {
-        $this->record = Guzzle\Log\Request::create(
-            new Request(static::METHOD, static::URI, static::HEADERS, static::BODY)
+        $factory = new Guzzle\Log\Factory();
+        $this->record = new Guzzle\Log\Request(
+            $factory->fromRequest(
+                new Request(static::METHOD, static::URI, static::HEADERS, static::BODY)
+            )
         );
 
         $this->assertTrue($this->record->save());
