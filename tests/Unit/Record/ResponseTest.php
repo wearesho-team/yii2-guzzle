@@ -48,9 +48,14 @@ class ResponseTest extends TestCase
      */
     public function testValidateRequest(): void
     {
-        $this->record->setRequest(
-            Guzzle\Log\Request::create(new Request('POST', 'www.example.com', static::HEADERS))
+        $factory = new Guzzle\Log\Factory();
+        $request = new Guzzle\Log\Request(
+            $factory->fromRequest(
+                new Request('POST', 'www.example.com', static::HEADERS)
+            )
         );
+        $request->save();
+        $this->record->setRequest($request);
 
         $this->assertTrue($this->record->validate('http_request_id'));
     }
@@ -60,10 +65,19 @@ class ResponseTest extends TestCase
      */
     public function testFullValidate(): void
     {
-        $this->record = Guzzle\Log\Response::create(
-            new Response(static::STATUS, static::HEADERS),
-            $request = Guzzle\Log\Request::create(new Request('POST', 'www.example.com', static::HEADERS))
+        $factory = new Guzzle\Log\Factory();
+
+        $request = new Guzzle\Log\Request(
+            $factory->fromRequest(new Request('POST', 'www.example.com', static::HEADERS))
         );
+        $request->save();
+
+        $response = new Guzzle\Log\Response(
+            $factory->fromResponse(new Response(static::STATUS, static::HEADERS))
+        );
+        $response->setRequest($request);
+
+        $this->record = $response;
 
         $this->assertTrue($this->record->save());
         $this->assertEquals($this->record->request, $request);

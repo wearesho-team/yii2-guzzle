@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Wearesho\Yii\Guzzle\Tests\Unit\Record;
 
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
+use Horat1us\Yii\Validation;
 use Wearesho\Yii\Guzzle;
 
 /**
@@ -51,7 +54,7 @@ class ExceptionTest extends TestCase
      */
     public function testValidateRelatedRequest(): void
     {
-        $httpRequest = Guzzle\Log\Request::create(new Request('GET', 'uri', static::HEADERS));
+        $httpRequest = $this->createRequest();
         $this->assertTrue($httpRequest->save());
         $this->record->http_request_id = $httpRequest->id;
 
@@ -64,7 +67,7 @@ class ExceptionTest extends TestCase
     public function testFullValidate(): void
     {
         $this->record = new Guzzle\Log\Exception([
-            'request' => Guzzle\Log\Request::create(new Request('GET', 'uri', static::HEADERS)),
+            'request' => $this->createRequest(),
             'trace' => static::TRACE,
             'type' => static::TYPE,
         ]);
@@ -79,10 +82,9 @@ class ExceptionTest extends TestCase
      */
     public function testCreateByGuzzleException(): void
     {
-        $httpRequest = new Request('GET', 'uri', static::HEADERS);
         $this->record = Guzzle\Log\Exception::create(
-            new RequestException('Message', $httpRequest),
-            Guzzle\Log\Request::create($httpRequest)
+            new RequestException('Message', new Request('GET', 'uri', static::HEADERS)),
+            $this->createRequest()
         );
 
         $this->assertTrue($this->record->save());
@@ -90,9 +92,11 @@ class ExceptionTest extends TestCase
 
     public function testTraceKeys(): void
     {
-        $httpRequest = new Request('GET', 'uri', static::HEADERS);
-        $exception = new \Exception();
-        $log = Guzzle\Log\Exception::create($exception, Guzzle\Log\Request::create($httpRequest));
+        $factory = new Guzzle\Log\Factory();
+
+        $log = new Guzzle\Log\Exception($factory->fromException(new \Exception()));
+        $log->setRequest($this->createRequest());
+
         $this->assertGreaterThan(0, count($log->trace));
         foreach ($log->trace as $trace) {
             $this->assertArrayHasKey('file', $trace);
@@ -101,5 +105,17 @@ class ExceptionTest extends TestCase
             $this->assertArrayNotHasKey('args', $trace);
             $this->assertArrayNotHasKey('type', $trace);
         }
+    }
+
+    private function createRequest(): Guzzle\Log\Request
+    {
+        $factory = new Guzzle\Log\Factory();
+        $request = new Guzzle\Log\Request(
+            $factory->fromRequest(
+                new Request('GET', 'uri', static::HEADERS)
+            )
+        );
+        Validation\Exception::saveOrThrow($request);
+        return $request;
     }
 }

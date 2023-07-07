@@ -16,7 +16,7 @@ use yii\db;
  * @property string $type
  * @property array $trace [jsonb] Exception Trace Format
  * @property int $created_at [timestamp(0)]
- * @property-read Request $request
+ * @property Request $request
  */
 class Exception extends db\ActiveRecord
 {

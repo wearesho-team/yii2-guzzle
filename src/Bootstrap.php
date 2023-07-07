@@ -2,11 +2,11 @@
 
 namespace Wearesho\Yii\Guzzle;
 
-use GuzzleHttp;
-use Psr\Http\Message;
 use Wearesho\Yii\Guzzle\Log;
-use yii\base;
 use yii\console;
+use GuzzleHttp;
+use yii\base;
+use yii\di;
 
 /**
  * Class Bootstrap
@@ -37,6 +37,19 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
     public array $config = [];
 
     /**
+     * Repository configuration
+     *
+     * @see Log\RepositoryInterface
+     * @see Log\SyncRepository
+     * @see Log\QueueRepository
+     *
+     * @var array
+     */
+    public array $repository = [
+        'class' => Log\SyncRepository::class,
+    ];
+
+    /**
      * @param base\Application $app
      *
      * @throws base\InvalidConfigException
@@ -53,7 +66,11 @@ class Bootstrap extends base\BaseObject implements base\BootstrapInterface
             }
         }
 
-        $middleware = new Log\Middleware($this->exclude);
+        /** @var Log\RepositoryInterface $repository */
+        $repository = di\Instance::ensure($this->repository, Log\RepositoryInterface::class);
+        \Yii::$container->setSingleton(Log\RepositoryInterface::class, $repository);
+
+        $middleware = new Log\Middleware($repository, $this->exclude);
         \Yii::$container->setSingleton(Log\Middleware::class, fn() => $middleware);
 
         $handlerStack = GuzzleHttp\HandlerStack::create();

@@ -64,8 +64,8 @@ class LogTest extends Guzzle\Tests\TestCase
 
         /** @var Guzzle\Log\Response $logResponse */
         $logResponse = Guzzle\Log\Response::find()->andWhere(['=', 'status', static::STATUS_200])->one();
-        $this->assertEquals(Guzzle\Log\Response::NOT_UTF_8_BODY, $logResponse->body);
-        $this->assertEquals(Guzzle\Log\Request::NOT_UTF_8_BODY, $logResponse->request->body);
+        $this->assertEquals(Guzzle\Log\Factory::NOT_UTF_8_BODY, $logResponse->body);
+        $this->assertEquals(Guzzle\Log\Factory::NOT_UTF_8_BODY, $logResponse->request->body);
     }
 
     public function testResponseWithStatus400(): void
@@ -217,13 +217,16 @@ class LogTest extends Guzzle\Tests\TestCase
          */
         $mockHandler = new GuzzleHttp\Handler\MockHandler($mocks);
         $handlerStack = GuzzleHttp\HandlerStack::create($mockHandler);
-        $handlerStack->push(new Guzzle\Log\Middleware([
-            '/php\.net/',
-            function (Message\RequestInterface $request) {
-                $host = $request->getUri()->getHost();
-                return $host === 'www.zsu.gov.ua';
-            },
-        ]));
+        $handlerStack->push(new Guzzle\Log\Middleware(
+            new Guzzle\Log\SyncRepository(new Guzzle\Log\Factory()),
+            [
+                '/php\.net/',
+                function (Message\RequestInterface $request) {
+                    $host = $request->getUri()->getHost();
+                    return $host === 'www.zsu.gov.ua';
+                },
+            ]
+        ));
         $this->client = new GuzzleHttp\Client([
             'handler' => $handlerStack
         ]);

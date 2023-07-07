@@ -17,12 +17,10 @@ use yii\db;
  * @property string $headers [jsonb]
  * @property string $body
  * @property int $created_at [timestamp(0)]
- * @property-read Request $request
+ * @property Request $request
  */
 class Response extends db\ActiveRecord
 {
-    public const NOT_UTF_8_BODY = Request::NOT_UTF_8_BODY;
-
     public static function tableName(): string
     {
         return 'http_response';
@@ -66,24 +64,5 @@ class Response extends db\ActiveRecord
         $this->http_request_id = $request ? $request->id : null;
         $this->populateRelation('request', $request);
         return $this;
-    }
-
-    public static function create(ResponseInterface $response, Request $logRequest): Response
-    {
-        $body = (string)$response->getBody();
-        if (!mb_check_encoding($body, "UTF-8")) {
-            $body = static::NOT_UTF_8_BODY;
-        }
-
-        $logResponse = new static([
-            'status' => $response->getStatusCode(),
-            'headers' => $response->getHeaders(),
-            'body' => $body,
-            'request' => $logRequest,
-        ]);
-
-        Validation\Exception::saveOrThrow($logResponse);
-
-        return $logResponse;
     }
 }

@@ -12,7 +12,9 @@ class Middleware
     /** @var string[]|\Closure[] */
     private array $exclude;
 
-    public function __construct(array $exclude = [])
+    private RepositoryInterface $repository;
+
+    public function __construct(RepositoryInterface $repository, array $exclude = [])
     {
         foreach ($exclude as $key => $rule) {
             if (is_callable($rule)) {
@@ -26,6 +28,7 @@ class Middleware
             );
         }
         $this->exclude = $exclude;
+        $this->repository = $repository;
     }
 
     public function __invoke(callable $handler): \Closure
@@ -44,20 +47,17 @@ class Middleware
                 }
             }
 
-            $logRequest = Request::create($request);
             return $handler->then(
-                function (Message\ResponseInterface $response) use ($logRequest) {
-                    Response::create($response, $logRequest);
+                function (Message\ResponseInterface $response) use ($request) {
+                    $this->repository->save($request, $response);
                     return $response;
                 },
-                function ($reason) use ($logRequest) {
-                    $reason instanceof \Throwable && Exception::create($reason, $logRequest);
+                function ($reason) use ($request) {
+                    $exception = $reason instanceof \Throwable ? $reason : null;
                     $response = $reason instanceof GuzzleHttp\Exception\RequestException
                         ? $reason->getResponse()
                         : null;
-                    if ($response) {
-                        Response::create($response, $logRequest);
-                    }
+                    $this->repository->save($request, $response, $exception);
 
                     return GuzzleHttp\Promise\Create::rejectionFor($reason);
                 }
