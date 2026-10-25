@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Wearesho\Yii\Guzzle\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Request;
@@ -12,7 +13,7 @@ use yii\queue;
 
 class QueueRepositoryTest extends TestCase
 {
-    public function dataProvider(): array
+    public static function dataProvider(): array
     {
         $request = new Request('POST', 'https://zsu.gov.ua/', [
             'x-donate-to' => 'Come Back Alive',
@@ -48,9 +49,7 @@ class QueueRepositoryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testSave(
         Request $request,
         ?Response $response,

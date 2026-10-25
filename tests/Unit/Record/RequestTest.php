@@ -2,15 +2,17 @@
 
 namespace Wearesho\Yii\Guzzle\Tests\Unit\Record;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Depends;
 use GuzzleHttp\Psr7\Request;
 use Wearesho\Yii\Guzzle;
 
 /**
  * Class RequestTest
  * @package Wearesho\Yii\Guzzle\Tests\Unit\Record
- * @coversDefaultClass \Wearesho\Yii\Guzzle\Log\Request
  * @internal
  */
+#[CoversClass(\Wearesho\Yii\Guzzle\Log\Request::class)]
 class RequestTest extends TestCase
 {
     protected const METHOD = 'POST';
@@ -26,9 +28,7 @@ class RequestTest extends TestCase
         $this->assertFalse($this->record->validate());
     }
 
-    /**
-     * @depends testFailedValidate
-     */
+    #[Depends('testFailedValidate')]
     public function testValidateMethod(): void
     {
         $this->record->method = static::METHOD;
@@ -36,9 +36,7 @@ class RequestTest extends TestCase
         $this->assertTrue($this->record->validate('method'));
     }
 
-    /**
-     * @depends testFailedValidate
-     */
+    #[Depends('testFailedValidate')]
     public function testValidateUri(): void
     {
         $this->record->uri = static::URI;
@@ -46,9 +44,7 @@ class RequestTest extends TestCase
         $this->assertTrue($this->record->validate('uri'));
     }
 
-    /**
-     * @depends testFailedValidate
-     */
+    #[Depends('testFailedValidate')]
     public function testValidateHeaders(): void
     {
         $this->record->headers = static::HEADERS;
@@ -56,9 +52,7 @@ class RequestTest extends TestCase
         $this->assertTrue($this->record->validate('headers'));
     }
 
-    /**
-     * @depends testFailedValidate
-     */
+    #[Depends('testFailedValidate')]
     public function testValidateBody(): void
     {
         $this->record->body = static::BODY;

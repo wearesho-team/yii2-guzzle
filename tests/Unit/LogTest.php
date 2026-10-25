@@ -2,6 +2,7 @@
 
 namespace Wearesho\Yii\Guzzle\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use GuzzleHttp;
 use Psr\Http\Message;
 use Wearesho\Yii\Guzzle;
@@ -9,9 +10,9 @@ use Wearesho\Yii\Guzzle;
 /**
  * Class LogTest
  * @package Wearesho\Yii\Guzzle\Tests\Unit
- * @covers \Wearesho\Yii\Guzzle\Log\Middleware
  * @internal
  */
+#[CoversClass(\Wearesho\Yii\Guzzle\Log\Middleware::class)]
 class LogTest extends Guzzle\Tests\TestCase
 {
     protected const URI = 'www.example.com';
@@ -253,7 +254,7 @@ class LogTest extends Guzzle\Tests\TestCase
         Message\RequestInterface $request,
         Message\ResponseInterface $response,
         string $message = self::EXCEPTION_MESSAGE,
-        \Exception $previous = null
+        ?\Exception $previous = null
     ) {
         return new GuzzleHttp\Exception\BadResponseException($message, $request, $response, $previous);
     }

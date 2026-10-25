@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Wearesho\Yii\Guzzle\Tests\Unit\Record;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Depends;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Horat1us\Yii\Validation;
@@ -12,9 +14,9 @@ use Wearesho\Yii\Guzzle;
 /**
  * Class ExceptionTest
  * @package Wearesho\Yii\Guzzle\Tests\Unit\Record
- * @coversDefaultClass \Wearesho\Yii\Guzzle\Log\Exception
  * @internal
  */
+#[CoversClass(\Wearesho\Yii\Guzzle\Log\Exception::class)]
 class ExceptionTest extends TestCase
 {
     protected const TYPE = 'test_type';
@@ -29,9 +31,7 @@ class ExceptionTest extends TestCase
         $this->assertFalse($this->record->validate());
     }
 
-    /**
-     * @depends testFailedValidate
-     */
+    #[Depends('testFailedValidate')]
     public function testValidateType(): void
     {
         $this->record->type = static::TYPE;
@@ -39,9 +39,7 @@ class ExceptionTest extends TestCase
         $this->assertTrue($this->record->validate('type'));
     }
 
-    /**
-     * @depends testFailedValidate
-     */
+    #[Depends('testFailedValidate')]
     public function testValidateTrace(): void
     {
         $this->record->trace = static::TRACE;
@@ -49,9 +47,7 @@ class ExceptionTest extends TestCase
         $this->assertTrue($this->record->validate('trace'));
     }
 
-    /**
-     * @depends testFailedValidate
-     */
+    #[Depends('testFailedValidate')]
     public function testValidateRelatedRequest(): void
     {
         $httpRequest = $this->createRequest();
@@ -61,9 +57,7 @@ class ExceptionTest extends TestCase
         $this->assertTrue($this->record->validate('http_request_id'));
     }
 
-    /**
-     * @depends testFailedValidate
-     */
+    #[Depends('testFailedValidate')]
     public function testFullValidate(): void
     {
         $this->record = new Guzzle\Log\Exception([
@@ -77,9 +71,7 @@ class ExceptionTest extends TestCase
         $this->assertTrue($this->record->validate());
     }
 
-    /**
-     * @depends testFailedValidate
-     */
+    #[Depends('testFailedValidate')]
     public function testCreateByGuzzleException(): void
     {
         $this->record = Guzzle\Log\Exception::create(

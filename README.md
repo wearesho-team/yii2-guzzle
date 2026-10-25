@@ -6,9 +6,11 @@
 
 Library for storing http queries into database
 
+Compatibility: tested on PHP 8.4, PHP 8.5
+
 ## Installation
 ```bash
-composer require wearesho-team/yii2-guzzle:^2.0
+composer require wearesho-team/yii2-guzzle:^2.1
 ```
 
 ## Usage
@@ -28,7 +30,7 @@ return [
                 // url regular expression
                 '/^.*(google).*$/iu',
                 // or closure (return true if you don't need to log request)
-                fn(Message\RequestInterface $request): bool => $request->getUri()->getHost() === 'zsu.gov.ua/'
+                fn(RequestInterface $request): bool => $request->getUri()->getHost() === 'zsu.gov.ua'
             ],
             // Guzzle client configuration settings
             'config' => [

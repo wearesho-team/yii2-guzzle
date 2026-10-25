@@ -2,6 +2,7 @@
 
 namespace Wearesho\Yii\Guzzle\Tests\Unit\Record;
 
+use PHPUnit\Framework\Attributes\Depends;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Wearesho\Yii\Guzzle;
@@ -23,9 +24,7 @@ class ResponseTest extends TestCase
         $this->assertFalse($this->record->validate());
     }
 
-    /**
-     * @depends testValidate
-     */
+    #[Depends('testValidate')]
     public function testValidateHeaders(): void
     {
         $this->record->headers = static::HEADERS;
@@ -33,9 +32,7 @@ class ResponseTest extends TestCase
         $this->assertTrue($this->record->validate('headers'));
     }
 
-    /**
-     * @depends testValidate
-     */
+    #[Depends('testValidate')]
     public function testValidateStatus(): void
     {
         $this->record->status = static::STATUS;
@@ -43,9 +40,7 @@ class ResponseTest extends TestCase
         $this->assertTrue($this->record->validate('status'));
     }
 
-    /**
-     * @depends testValidate
-     */
+    #[Depends('testValidate')]
     public function testValidateRequest(): void
     {
         $factory = new Guzzle\Log\Factory();
@@ -60,9 +55,7 @@ class ResponseTest extends TestCase
         $this->assertTrue($this->record->validate('http_request_id'));
     }
 
-    /**
-     * @depends testValidate
-     */
+    #[Depends('testValidate')]
     public function testFullValidate(): void
     {
         $factory = new Guzzle\Log\Factory();
