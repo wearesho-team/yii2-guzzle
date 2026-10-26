@@ -51,7 +51,7 @@ class Exception extends db\ActiveRecord
         return $this->hasOne(Request::class, ['id' => 'http_request_id']);
     }
 
-    public function setRequest(Request $request = null): Exception
+    public function setRequest(?Request $request = null): Exception
     {
         $this->http_request_id = $request ? $request->id : null;
         $this->populateRelation('request', $request);

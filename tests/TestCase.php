@@ -88,6 +88,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             }
             ob_end_clean();
         }
+        \Yii::$app?->getErrorHandler()->unregister();
         \Yii::$app = null;
     }
 

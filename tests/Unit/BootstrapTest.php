@@ -2,6 +2,7 @@
 
 namespace Wearesho\Yii\Guzzle\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use GuzzleHttp;
 use Wearesho\Yii\Guzzle\Bootstrap;
 use Wearesho\Yii\Guzzle\Tests\TestCase;
@@ -9,9 +10,9 @@ use Wearesho\Yii\Guzzle\Tests\TestCase;
 /**
  * Class BootstrapTest
  * @package Wearesho\Yii\Guzzle\Tests\Unit
- * @coversDefaultClass \Wearesho\Yii\Guzzle\Bootstrap
  * @internal
  */
+#[CoversClass(\Wearesho\Yii\Guzzle\Bootstrap::class)]
 class BootstrapTest extends TestCase
 {
     public function testBootstrapApp(): void

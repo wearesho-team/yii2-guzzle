@@ -59,7 +59,7 @@ class Response extends db\ActiveRecord
         return $this->hasOne(Request::class, ['id' => 'http_request_id']);
     }
 
-    public function setRequest(Request $request = null): Response
+    public function setRequest(?Request $request = null): Response
     {
         $this->http_request_id = $request ? $request->id : null;
         $this->populateRelation('request', $request);
